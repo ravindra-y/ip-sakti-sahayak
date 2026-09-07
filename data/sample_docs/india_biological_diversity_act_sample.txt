@@ -1,0 +1,33 @@
+[DEMONSTRATION SAMPLE — NOT OFFICIAL LEGAL TEXT]
+Title: Biological Diversity Act 2002 — Access and Benefit Sharing Provisions
+Jurisdiction: India
+Authority: National Biodiversity Authority (NBA), Government of India
+Category: Biological Diversity
+Source: https://nbaindia.org/
+Version: Act No. 18 of 2003
+Publication Date: 2002
+
+SUMMARY:
+The Biological Diversity Act 2002 (BD Act) establishes the National Biodiversity Authority (NBA) and creates a framework for the conservation of biological diversity and equitable sharing of benefits arising from the use of biological resources. It implements India's obligations under the Convention on Biological Diversity (CBD).
+
+KEY PROVISIONS:
+
+1. Section 3 — Restriction on Access by Foreign Nationals/Entities:
+No person who is not a citizen of India, or a body corporate, association or organization not incorporated or registered in India, or is incorporated or registered in India but has any non-Indian participation in its share capital or management, shall obtain any biological resource occurring in India or knowledge associated thereto without prior approval of the NBA.
+
+2. Section 6 — Approval Before Applying for IP:
+Any person applying for any form of Intellectual Property Rights in or outside India on any invention based on any research or information on a biological resource obtained from India must, before making such application, obtain prior approval of the NBA. Failure to do so can result in revocation of IP rights.
+
+3. Section 19 — Prior Approval for Access by All:
+Even Indian citizens, companies, and researchers must obtain approval from State Biodiversity Boards (SBBs) before accessing biological resources for commercial or research purposes, except where exemptions apply (e.g., local communities for self-use).
+
+4. Section 21 — Benefit Sharing:
+The NBA must ensure that terms and conditions of access include equitable benefit sharing with local communities, including monetary and non-monetary benefits, joint R&D, and technology transfer.
+
+5. Sections 55–57 — Penalties:
+Violations of Sections 3, 4, or 6 can attract imprisonment up to five years or fines up to ten lakh rupees, or both.
+
+IMPLICATIONS FOR AYURVEDA:
+Any company or researcher that uses a biological resource found in India (e.g., a specific variety of tulsi, ashwagandha, or turmeric) to develop an Ayurvedic product and then applies for a patent or other IP protection must obtain prior NBA approval. Failure to do so renders both the research and any IP obtained potentially invalid and may attract criminal penalties.
+
+This document is a demonstration summary for the IP-SAKTI Sahayak system. Consult the National Biodiversity Authority for official guidance.

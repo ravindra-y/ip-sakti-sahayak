@@ -1,0 +1,28 @@
+[DEMONSTRATION SAMPLE — NOT OFFICIAL LEGAL TEXT]
+Title: Patents Act 1970 (as amended) — Traditional Knowledge Provisions
+Jurisdiction: India
+Authority: Office of the Controller General of Patents, Designs & Trade Marks (CGPDTM)
+Category: Patents
+Source: Official Act — https://ipindia.gov.in/patents.htm
+Version: As amended up to Patents (Amendment) Act 2005
+Publication Date: 2005
+
+SUMMARY:
+The Patents Act 1970, as substantially amended in 2002 and 2005, governs patent law in India. Several provisions are directly relevant to Ayurvedic and traditional knowledge:
+
+1. Section 3(p) — Non-Patentable Inventions:
+An invention which, in effect, is traditional knowledge or which is an aggregation or duplication of known properties of traditionally known component or components is not patentable. This provision explicitly prevents the grant of patents for inventions that merely rediscover or aggregate knowledge already existing within India's traditional knowledge systems, including Ayurveda.
+
+2. Section 25(1)(k) and 25(2)(k) — Opposition Grounds:
+A patent may be opposed (pre-grant or post-grant) on the grounds that the invention is anticipated having regard to the knowledge, oral or otherwise, available within any local or indigenous community in India or elsewhere. This provision enables the TKDL to be used as evidence in patent opposition proceedings.
+
+3. Section 64(1)(q) — Revocation:
+A patent may be revoked if the invention is not an invention within the meaning of the Act, which includes traditional knowledge under Section 3(p).
+
+4. Section 2(1)(j) — Definition of Invention:
+An 'invention' must be a new product or process involving an inventive step and capable of industrial application. Traditional knowledge, being known and practiced for centuries, does not meet the 'new' or 'inventive step' criteria.
+
+KEY POINT FOR AYURVEDA:
+Ayurvedic formulations documented in classical texts such as Charaka Samhita, Sushruta Samhita, Ashtanga Hridayam, and the Ayurvedic Formulary of India are considered traditional knowledge under Indian patent law. Filing a patent for such a formulation without novel modification is not permissible. However, a genuinely novel extraction process, delivery mechanism, or a formulation with a non-obvious technical effect not derivable from classical texts may be patentable.
+
+This document is a demonstration summary for the IP-SAKTI Sahayak system. Consult the official Act and a qualified IP attorney for legal advice.

@@ -1,0 +1,35 @@
+[DEMONSTRATION SAMPLE — NOT OFFICIAL LEGAL TEXT]
+Title: Geographical Indications of Goods (Registration & Protection) Act 1999
+Jurisdiction: India
+Authority: Geographical Indications Registry, CGPDTM, Government of India
+Category: Geographical Indications
+Source: https://ipindia.gov.in/geographical-indications.htm
+Version: Act No. 48 of 1999, GI Rules 2002
+Publication Date: 1999
+
+SUMMARY:
+The Geographical Indications of Goods (Registration & Protection) Act 1999 (GI Act) enables the registration and legal protection of geographical indications (GIs) for goods in India. A GI is a sign indicating that a product originates from a specific geographical area with qualities, reputation, or characteristics attributable to that origin.
+
+KEY PROVISIONS:
+
+1. Section 11 — Application for Registration:
+Any association of persons, producers, organisation or authority established by or under law representing the interests of producers of the concerned goods may apply for GI registration.
+
+2. Section 22 — Prohibition of Registration of GI as Trademark:
+A trademark that contains or consists of a GI identifying goods that do not originate in the territory indicated shall not be registered if such use would mislead the public as to the true place of origin.
+
+3. Section 20 — Validity and Duration:
+A registered GI is valid for 10 years and is renewable indefinitely, making it a perpetual protection mechanism for genuine geographical products.
+
+4. Protection Under Section 22–26:
+A registered GI holder can prevent use of the indication by entities not from the relevant geographical region and can take action against imitation, even if the true origin is also stated.
+
+AYURVEDA-RELEVANT EXAMPLES:
+- Mahabaleshwar Strawberry, Darjeeling Tea, Basmati Rice are Indian GIs.
+- Several Ayurvedic preparations and herbal products have been considered for GI registration, including specific regional varieties used in classical formulations.
+- A GI tag can protect an Ayurvedic product tied to a specific region (e.g., a classical formulation using Kerala's specific variety of an herb) from commercialisation by outsiders.
+
+LIMITATION:
+GI protection does not grant a monopoly — it is a collective right. Individual producers within the designated area still compete with each other. GI cannot substitute for patent, trademark, or copyright protection of the formula itself.
+
+This document is a demonstration summary for the IP-SAKTI Sahayak system. Consult the GI Registry for official guidance.

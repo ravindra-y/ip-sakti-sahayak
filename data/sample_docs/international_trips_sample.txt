@@ -1,0 +1,33 @@
+[DEMONSTRATION SAMPLE — NOT OFFICIAL LEGAL TEXT]
+Title: Agreement on Trade-Related Aspects of Intellectual Property Rights (TRIPS) — Traditional Knowledge Provisions
+Jurisdiction: International
+Authority: World Trade Organisation (WTO)
+Category: Patents
+Source: https://www.wto.org/english/docs_e/legal_e/27-trips.pdf
+Version: TRIPS Agreement 1994, as amended
+Publication Date: 1994
+
+SUMMARY:
+The Agreement on Trade-Related Aspects of Intellectual Property Rights (TRIPS), administered by the WTO, is the foundational international agreement on IP. It sets minimum standards for IP protection in WTO member countries. Its relationship with traditional knowledge is complex and has been the subject of ongoing negotiations.
+
+KEY PROVISIONS RELEVANT TO TRADITIONAL KNOWLEDGE:
+
+1. Article 27.1 — Patentability:
+Patents shall be available for any inventions, whether products or processes, in all fields of technology, provided that they are new, involve an inventive step and are capable of industrial application. Traditional knowledge, by being publicly known, typically fails the 'new' and 'inventive step' tests.
+
+2. Article 27.3(b) — Exclusions:
+Members may exclude from patentability plants and animals other than micro-organisms, and essentially biological processes for the production of plants or animals other than non-biological and microbiological processes. This is relevant to Ayurvedic botanical resources.
+
+3. Article 28 — Rights Conferred:
+A patent grants the right to exclude third parties from making, using, selling, offering for sale, or importing the patented product or process. A valid patent on an Ayurvedic-based invention grants these international rights.
+
+4. Article 29 — Conditions on Patent Applicants:
+Applicants must disclose the invention in a manner sufficiently clear and complete for a skilled person to carry it out. The absence of disclosure of biological resource origin in patent applications has been a key issue in TRIPS-CBD negotiations.
+
+TRIPS-CBD CONFLICT:
+The Convention on Biological Diversity (CBD) requires prior informed consent and benefit sharing (ABS), while TRIPS does not mandate disclosure of genetic resource origin in patent applications. This 'TRIPS-CBD conflict' remains unresolved in WTO negotiations. India, Brazil, and other megadiverse countries have pushed for mandatory disclosure requirements.
+
+DISCLOSURE REQUIREMENT DEBATE:
+The 2010 Nagoya Protocol and ongoing WIPO/WTO negotiations address the gap. Many countries that are not required under TRIPS to disclose origin still face opposition proceedings using TKDL and similar national databases.
+
+This document is a demonstration summary for the IP-SAKTI Sahayak system. Consult official WTO/WIPO sources for authoritative guidance.

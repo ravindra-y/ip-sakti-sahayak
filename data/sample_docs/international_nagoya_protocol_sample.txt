@@ -1,0 +1,39 @@
+[DEMONSTRATION SAMPLE — NOT OFFICIAL LEGAL TEXT]
+Title: Nagoya Protocol on Access to Genetic Resources and the Fair and Equitable Sharing of Benefits Arising from their Utilization
+Jurisdiction: International
+Authority: Convention on Biological Diversity (CBD) Secretariat, United Nations
+Category: Biological Diversity
+Source: https://www.cbd.int/abs/
+Version: Entered into force 12 October 2014
+Publication Date: 2010
+
+SUMMARY:
+The Nagoya Protocol is a supplementary agreement to the Convention on Biological Diversity (CBD). It provides a transparent legal framework for the effective implementation of the fair and equitable sharing of benefits arising from the utilization of genetic resources (Access and Benefit Sharing — ABS). It is legally binding on its 138+ parties.
+
+KEY ARTICLES RELEVANT TO AYURVEDA:
+
+1. Article 5 — Fair and Equitable Benefit Sharing:
+Benefits arising from the utilization of genetic resources, as well as subsequent applications and commercialisation, shall be shared in a fair and equitable way with the Party providing such resources. Benefit sharing applies to both monetary (royalties, upfront payments) and non-monetary benefits (technology transfer, joint R&D, training).
+
+2. Article 6 — Access to Genetic Resources:
+Access to genetic resources for their utilization shall be subject to Prior Informed Consent (PIC) of the Party providing such resources, unless otherwise determined by that Party. Commercial use of genetic resources from a Nagoya Protocol party without PIC is non-compliant.
+
+3. Article 7 — Access to Traditional Knowledge Associated with Genetic Resources:
+In accordance with domestic legislation, access to traditional knowledge associated with genetic resources held by indigenous and local communities shall be subject to the Prior Informed Consent or approval and involvement of indigenous and local communities. This is critical for Ayurvedic formulations — the associated traditional knowledge requires PIC from community holders.
+
+4. Article 12 — Traditional Knowledge:
+Parties shall take into consideration indigenous and local communities' customary laws, community protocols, and procedures. Parties shall endeavour to support the development of community protocols in relation to access to TK.
+
+5. Article 15 — Compliance with Domestic Legislation on PIC and ABS:
+Each Party shall take appropriate, effective, and proportionate legislative, administrative, or policy measures to provide that utilization of genetic resources utilized within its jurisdiction has occurred in accordance with PIC and establishment of mutually agreed terms.
+
+6. Article 17 — Monitoring the Utilization of Genetic Resources:
+To support compliance, Parties shall designate checkpoints, such as patent offices, to collect or receive relevant information on PIC, source of genetic resources, and establishment of mutually agreed terms.
+
+ABS CLEARING-HOUSE:
+The Nagoya Protocol established an ABS Clearing-House (https://absch.cbd.int/) where Parties publish their national ABS legislation, permit requirements, and model clauses. Researchers and companies using biological resources from Nagoya-party countries can check their obligations here.
+
+IMPLICATION FOR AYURVEDA COMPANIES:
+A company using a biological resource (e.g., a specific medicinal plant variety from India) to develop a commercial product and seeking international IP protection must comply with both India's Biological Diversity Act 2002 and the Nagoya Protocol if operating in or exporting to countries that are Parties to the Protocol.
+
+This document is a demonstration summary for the IP-SAKTI Sahayak system. Consult official CBD/SCBD sources for authoritative guidance.

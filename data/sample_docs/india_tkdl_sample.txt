@@ -1,0 +1,27 @@
+[DEMONSTRATION SAMPLE — NOT OFFICIAL LEGAL TEXT]
+Title: Traditional Knowledge Digital Library (TKDL) — Overview and Prior Art Use
+Jurisdiction: India
+Authority: Council of Scientific & Industrial Research (CSIR) and Ministry of AYUSH
+Category: Traditional Knowledge
+Source: https://www.tkdl.res.in/
+Version: Database active since 2001
+Publication Date: 2001
+
+SUMMARY:
+The Traditional Knowledge Digital Library (TKDL) is an initiative of the Government of India that documents India's traditional knowledge related to Ayurveda, Unani, Siddha, Yoga, and Naturopathy in digitised and structured form. It was created to prevent misappropriation of Indian traditional knowledge through erroneous grant of patents abroad.
+
+KEY FEATURES:
+1. DATABASE SCALE: The TKDL contains approximately 0.29 million medicinal formulations from classical texts including Charaka Samhita, Sushruta Samhita, Ashtanga Hridayam, Sarangadhara Samhita, Bhavaprakasha Nighantu, and others. Records are available in five languages: English, French, German, Japanese, and Spanish.
+
+2. TRADITIONAL KNOWLEDGE RESOURCE CLASSIFICATION (TKRC): A specially developed classification system that maps Ayurvedic formulations to the International Patent Classification (IPC) system, enabling patent examiners to search and find relevant prior art.
+
+3. ACCESS AGREEMENTS: TKDL has signed access agreements with major international patent offices including the European Patent Office (EPO), the United States Patent and Trademark Office (USPTO), the Japan Patent Office (JPO), the German Patent Office (DPMA), and the United Kingdom Intellectual Property Office (UKIPO). Patent examiners at these offices can search TKDL to determine if a traditional knowledge claim pre-exists.
+
+4. DEFENSIVE ROLE: TKDL operates as a defensive mechanism. It does not grant any IP rights — rather, it provides prior art to prevent wrongful IP grants. Notable cases include the reversal of patents on turmeric wound healing and neem antifungal properties using TKDL evidence.
+
+5. LIMITATION: TKDL access is restricted to patent offices — it is not publicly accessible to researchers or companies. This is by design to prevent commercial misuse while enabling defensive use.
+
+RELEVANCE TO ABS AND IP:
+Knowledge documented in TKDL is considered publicly known prior art. Any patent application that can be read on TKDL formulations is likely to face rejection under Section 25(1)(k) of the Patents Act 1970 (as amended) or Article 27 of TRIPS if examined by an examiner with TKDL access.
+
+This document is a demonstration summary for the IP-SAKTI Sahayak system. Consult official CSIR/AYUSH sources for authoritative information.

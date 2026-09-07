@@ -1,0 +1,55 @@
+import httpx
+import json
+
+class OllamaUnavailableError(Exception):
+    pass
+
+class OllamaClient:
+    def __init__(self, base_url: str, model: str):
+        self.base_url = base_url
+        self.model = model
+
+    async def generate(self, prompt: str, system_prompt: str, max_tokens: int = 1024) -> str:
+        url = f"{self.base_url}/api/generate"
+        payload = {
+            "model": self.model,
+            "prompt": prompt,
+            "system": system_prompt,
+            "stream": False,
+            "options": {
+                "num_predict": max_tokens
+            }
+        }
+        
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(url, json=payload, timeout=60.0)
+                response.raise_for_status()
+                return response.json()["response"]
+        except Exception as e:
+            raise OllamaUnavailableError(f"Failed to communicate with Ollama: {str(e)}")
+
+    async def check_availability(self) -> bool:
+        url = f"{self.base_url}/api/tags"
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(url, timeout=5.0)
+                if response.status_code == 200:
+                    data = response.json()
+                    models = [m["name"] for m in data.get("models", [])]
+                    return self.model in models or f"{self.model}:latest" in models
+                return False
+        except Exception:
+            return False
+
+# System Prompt constants
+SYSTEM_PROMPT = """You are IP-SAKTI Sahayak, an AI assistant for Ayurveda Intellectual Property and regulatory guidance.
+You must adhere strictly to these rules:
+1. Answer ONLY using the provided context.
+2. Never invent laws, sections, articles, rules, treaties, cases, or sources.
+3. Never fabricate citations.
+4. If context is insufficient, state: "I do not have sufficient authoritative information in the retrieved sources to answer this reliably."
+5. Always clearly state the jurisdiction you are answering for.
+6. Use plain, accessible language.
+7. Always end with: "Information only — not legal advice."
+8. Provide citations from the context."""

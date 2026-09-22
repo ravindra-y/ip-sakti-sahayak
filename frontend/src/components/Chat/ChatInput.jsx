@@ -66,48 +66,53 @@ const ChatInput = ({ onSend, isLoading, jurisdiction, conversationId }) => {
   };
 
   return (
-    <div style={{ padding: '1rem 0 0', backgroundColor: 'var(--color-bg)' }}>
+    <div style={{ padding: '0 0 1rem', backgroundColor: 'var(--color-bg)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <div style={{
         display: 'flex',
-        gap: '0.75rem',
-        alignItems: 'flex-end',
+        alignItems: 'center',
         backgroundColor: 'var(--color-surface)',
-        padding: '0.75rem',
-        borderRadius: 'var(--radius-lg)',
-        boxShadow: 'var(--shadow-md)',
-        border: '1px solid var(--color-border)'
+        padding: '0.5rem 1rem',
+        borderRadius: '9999px',
+        boxShadow: 'var(--shadow-sm)',
+        border: '1px solid var(--color-border)',
+        width: '100%',
+        maxWidth: '800px',
+        minHeight: '60px'
       }}>
         <button
           className="btn btn-ghost"
-          style={{ padding: '0.5rem', borderRadius: '50%', color: 'var(--color-text-muted)', flexShrink: 0, border: 'none' }}
+          style={{ padding: '0.5rem', borderRadius: '50%', color: 'var(--color-text-muted)', flexShrink: 0, border: 'none', background: 'transparent', cursor: 'pointer' }}
           onClick={() => setShowEscalationModal(true)}
           title="Escalate for Expert Review"
           aria-label="Escalate for Expert Review"
         >
           <Headset size={20} />
         </button>
-        <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center' }}>
+        <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center', marginLeft: '0.5rem' }}>
           <textarea
             ref={textareaRef}
             className="form-control"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask IP-SAKTI Sahayak about Ayurveda IP & regulations... (Enter to send)"
+            placeholder="Ask IP-SHAKTI a question..."
             disabled={isLoading}
             style={{
               resize: 'none',
               overflowY: 'auto',
-              minHeight: '44px',
+              minHeight: '24px',
               border: 'none',
               boxShadow: 'none',
-              padding: '0.5rem 0',
+              padding: '0',
               paddingRight: '3rem',
-              backgroundColor: 'transparent'
+              backgroundColor: 'transparent',
+              fontSize: '1rem',
+              outline: 'none',
+              width: '100%'
             }}
             rows={1}
           />
-          <div style={{ position: 'absolute', right: '0.5rem', bottom: '0.5rem', fontSize: '0.65rem', color: 'var(--color-border)' }}>
+          <div style={{ position: 'absolute', right: '0.5rem', bottom: '0', fontSize: '0.65rem', color: 'var(--color-text-muted)', opacity: 0.6, pointerEvents: 'none' }}>
             {input.length}/1000
           </div>
         </div>
@@ -116,14 +121,19 @@ const ChatInput = ({ onSend, isLoading, jurisdiction, conversationId }) => {
           onClick={handleSend}
           disabled={!input.trim() || isLoading}
           style={{
-            height: '44px',
-            width: '44px',
+            height: '40px',
+            width: '40px',
             padding: 0,
-            borderRadius: 'var(--radius-md)',
+            borderRadius: '50%',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            flexShrink: 0
+            flexShrink: 0,
+            border: 'none',
+            backgroundColor: (input.trim() && !isLoading) ? 'var(--color-primary)' : 'var(--color-border)',
+            color: 'white',
+            cursor: (input.trim() && !isLoading) ? 'pointer' : 'default',
+            transition: 'background-color 0.2s'
           }}
         >
           {isLoading ? (
@@ -134,8 +144,8 @@ const ChatInput = ({ onSend, isLoading, jurisdiction, conversationId }) => {
         </button>
       </div>
 
-      <div style={{ textAlign: 'center', marginTop: '0.5rem', fontSize: '0.7rem', color: 'var(--color-text-muted)' }}>
-        Press <kbd style={{ backgroundColor: 'var(--color-bg)', border: '1px solid var(--color-border)', borderRadius: '3px', padding: '0 4px', fontFamily: 'monospace' }}>Enter</kbd> to send · <kbd style={{ backgroundColor: 'var(--color-bg)', border: '1px solid var(--color-border)', borderRadius: '3px', padding: '0 4px', fontFamily: 'monospace' }}>Shift+Enter</kbd> for new line · Use <Headset size={10} style={{ verticalAlign: 'middle' }} /> to request expert review
+      <div style={{ textAlign: 'center', marginTop: '0.75rem', fontSize: '0.7rem', color: 'var(--color-text-muted)', opacity: 0.8 }}>
+        Press <kbd style={{ fontFamily: 'monospace' }}>Enter</kbd> to send · <kbd style={{ fontFamily: 'monospace' }}>Shift+Enter</kbd> for new line
       </div>
 
       <style>{`

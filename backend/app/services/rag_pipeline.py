@@ -50,6 +50,9 @@ class RAGPipeline:
         abstained, abstention_reason = should_abstain(
             search_results, confidence, settings.confidence_threshold
         )
+        if category == "GENERAL":
+            abstained = False
+            abstention_reason = None
 
         sources = extract_citations(search_results)
         message_id = str(uuid.uuid4())

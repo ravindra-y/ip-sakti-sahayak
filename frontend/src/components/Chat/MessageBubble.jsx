@@ -41,12 +41,12 @@ const MessageBubble = ({ message }) => {
         <div style={{
           padding: '1rem',
           borderRadius: 'var(--radius-md)',
-          backgroundColor: isUser ? 'var(--color-surface)' : 'var(--color-surface)',
+          backgroundColor: isUser ? 'var(--color-surface)' : 'transparent',
           color: 'var(--color-text)',
-          border: '1px solid var(--color-border)',
+          border: isUser ? '1px solid var(--color-border)' : 'none',
           borderTopRightRadius: isUser ? '0' : 'var(--radius-md)',
           borderTopLeftRadius: !isUser ? '0' : 'var(--radius-md)',
-          boxShadow: 'var(--shadow-sm)',
+          boxShadow: isUser ? 'var(--shadow-sm)' : 'none',
           width: '100%'
         }}>
           {message.abstained && (
@@ -78,19 +78,20 @@ const MessageBubble = ({ message }) => {
           )}
 
           {!isUser && message.sources && message.sources.length > 0 && (
-            <div style={{ marginTop: '1.25rem', borderTop: '1px solid var(--color-border)', paddingTop: '1rem' }}>
-              <div style={{ fontSize: '0.875rem', fontWeight: 600, marginBottom: '0.75rem', color: 'var(--color-text-muted)' }}>SOURCES CONSULTED:</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem' }}>
-                {message.sources.map((source, idx) => (
-                  <CitationCard key={idx} source={source} />
-                ))}
+            <div style={{ marginTop: '1rem' }}>
+              <div style={{ fontSize: '0.8rem', fontWeight: 600, marginBottom: '0.25rem', color: 'var(--color-text-muted)' }}>Sources</div>
+              <div style={{ height: '1px', backgroundColor: 'var(--color-border)', width: '3rem', marginBottom: '0.5rem' }} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                {message.sources.map((source, idx) => {
+                   const title = source.title || source.document_id || 'Document';
+                   const page = source.page_number ? ` · Page ${source.page_number}` : '';
+                   return (
+                     <div key={idx} style={{ fontSize: '0.85rem', color: 'var(--color-primary)' }}>
+                       📄 {title}{page}
+                     </div>
+                   );
+                })}
               </div>
-            </div>
-          )}
-
-          {!isUser && (
-            <div style={{ marginTop: '1rem', fontSize: '0.75rem', color: 'var(--color-text-muted)', borderTop: '1px dotted var(--color-border)', paddingTop: '0.5rem' }}>
-              Disclaimer: Information provided is not legal advice. Consult a qualified professional.
             </div>
           )}
 
@@ -139,8 +140,8 @@ const MessageBubble = ({ message }) => {
             </div>
           )}
         </div>
-        <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '0.4rem', padding: '0 0.5rem' }}>
-          {isUser ? 'You' : 'IP-SAKTI Sahayak'} • {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+        <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '0.4rem', padding: '0 0.5rem', opacity: 0.6 }}>
+          {isUser ? 'You' : 'IP-SHAKTI Sahayak'}
         </div>
       </div>
     </div>

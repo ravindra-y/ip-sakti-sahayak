@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 *.so
 .Python
+.venv/
 backend/venv/
 venv/
 ENV/
@@ -12,13 +13,15 @@ env/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Generated data (not the source PDFs)
 backend/data/chroma_db/
 backend/data/ip_sakti.db
-backend/data/raw/
+backend/data/processed/
 *.db
 *.sqlite3
 
-# Node / Frontend
+# Frontend
 frontend/node_modules/
 frontend/dist/
 frontend/dist-ssr/
@@ -41,3 +44,8 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Secrets (never commit)
+*.key
+*.pem
+*.cert

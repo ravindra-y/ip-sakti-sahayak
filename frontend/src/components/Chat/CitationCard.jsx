@@ -1,7 +1,15 @@
 import React from 'react';
-import { ExternalLink, FileText, Bookmark, Building2 } from 'lucide-react';
+import { ExternalLink, FileText, Bookmark, Building2, Hash } from 'lucide-react';
 
 const CitationCard = ({ source }) => {
+  // Backend sends: document_type, relevance_score, official_url, page_number, filename
+  // Handle both old and new field names gracefully
+  const docType = source.document_type || source.type || '';
+  const relevanceScore = source.relevance_score ?? source.relevance;
+  const officialUrl = source.official_url || source.url;
+  const pageNumber = source.page_number;
+  const filename = source.filename;
+
   return (
     <div style={{
       border: '1px solid var(--color-border)',
@@ -10,7 +18,7 @@ const CitationCard = ({ source }) => {
       backgroundColor: 'var(--color-surface)',
       fontSize: '0.875rem',
       width: '100%',
-      maxWidth: '320px',
+      maxWidth: '340px',
       boxShadow: 'var(--shadow-sm)',
       transition: 'box-shadow 0.2s',
       display: 'flex',
@@ -20,6 +28,7 @@ const CitationCard = ({ source }) => {
     onMouseEnter={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-md)'}
     onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'var(--shadow-sm)'}
     >
+      {/* Title + Jurisdiction badge */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
         <div style={{ fontWeight: 600, color: 'var(--color-primary)', display: 'flex', gap: '0.4rem', alignItems: 'flex-start', lineHeight: 1.3 }}>
           <FileText size={16} style={{ flexShrink: 0, marginTop: '0.1rem' }} />
@@ -31,7 +40,8 @@ const CitationCard = ({ source }) => {
           </span>
         )}
       </div>
-      
+
+      {/* Metadata rows */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', color: 'var(--color-text-muted)', fontSize: '0.8rem' }}>
         {source.authority && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
@@ -42,28 +52,40 @@ const CitationCard = ({ source }) => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', justifyContent: 'space-between' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
             <Bookmark size={14} />
-            <span>{source.type} {source.version && `(v${source.version})`}</span>
+            <span>{docType}{source.version ? ` (${source.version})` : ''}</span>
           </div>
-          {source.relevance !== undefined && (
+          {relevanceScore !== undefined && (
             <span style={{ fontWeight: 500 }}>
-              Relevance: {Math.round(source.relevance * 100)}%
+              {Math.round(relevanceScore * 100)}% match
             </span>
           )}
         </div>
+
+        {/* Page and filename */}
+        {(pageNumber || filename) && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+            <Hash size={14} />
+            <span>
+              {filename && <span title={filename}>{filename.length > 30 ? filename.slice(0, 28) + '…' : filename}</span>}
+              {pageNumber && <span style={{ marginLeft: filename ? '0.25rem' : 0 }}>p.{pageNumber}</span>}
+            </span>
+          </div>
+        )}
       </div>
 
-      {source.url && (
-        <a 
-          href={source.url} 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          style={{ 
-            display: 'inline-flex', 
-            alignItems: 'center', 
-            gap: '0.25rem', 
-            marginTop: '0.25rem', 
-            fontSize: '0.8rem', 
-            color: 'var(--color-primary-light)', 
+      {/* External link */}
+      {officialUrl && (
+        <a
+          href={officialUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.25rem',
+            marginTop: '0.25rem',
+            fontSize: '0.8rem',
+            color: 'var(--color-primary-light)',
             textDecoration: 'none',
             fontWeight: 500
           }}

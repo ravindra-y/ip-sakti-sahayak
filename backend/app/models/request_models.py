@@ -8,7 +8,7 @@ class Jurisdiction(str, Enum):
     BOTH = "both"
 
 class ChatRequest(BaseModel):
-    question: str = Field(min_length=3, max_length=2000)
+    question: str = Field(min_length=1, max_length=2000)
     jurisdiction: Jurisdiction = Jurisdiction.INDIA
     conversation_id: Optional[str] = None
     include_formulation_hints: bool = False

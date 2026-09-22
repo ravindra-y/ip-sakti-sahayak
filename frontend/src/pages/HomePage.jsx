@@ -45,69 +45,56 @@ const HomePage = () => {
     <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 120px)', maxWidth: '900px', margin: '0 auto', position: 'relative' }}>
 
       {/* Header Area */}
-      <div style={{ marginBottom: '1.5rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-        <div style={{ textAlign: 'center' }}>
-          <h2 style={{ marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
-            <Sparkles size={24} color="var(--color-secondary)" />
-            Regulatory AI Assistant
-          </h2>
-          <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', margin: 0 }}>
-            Query IP rules, patents, traditional knowledge, and biodiversity frameworks.
-          </p>
+      {messages.length === 0 && (
+        <div style={{ marginBottom: '1.5rem', marginTop: '10vh', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ textAlign: 'center' }}>
+            <h2 style={{ marginBottom: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem', justifyContent: 'center' }}>
+              <Sparkles size={24} color="var(--color-secondary)" />
+              IP-SHAKTI Sahayak
+            </h2>
+            <p style={{ color: 'var(--color-text-muted)', fontSize: '0.9rem', margin: 0 }}>
+              Ayurveda Regulatory AI Assistant
+            </p>
+          </div>
+          <JurisdictionToggle jurisdiction={jurisdiction} onChange={setJurisdiction} />
         </div>
-
-        <JurisdictionToggle jurisdiction={jurisdiction} onChange={setJurisdiction} />
-      </div>
-
-      <DisclaimerBar
-        message={
-          jurisdiction === 'india'
-            ? 'Querying India jurisdiction — Patents Act, GI Act, Biological Diversity Act, TKDL, and more.'
-            : jurisdiction === 'international'
-            ? 'Querying International jurisdiction — TRIPS, Nagoya Protocol, CBD, WIPO frameworks.'
-            : 'Querying both India and International jurisdictions simultaneously.'
-        }
-        type="info"
-      />
+      )}
 
       {/* Chat Area */}
       <div style={{
         flex: 1,
         overflowY: 'auto',
-        padding: '1.5rem',
-        backgroundColor: 'var(--color-surface)',
-        borderRadius: 'var(--radius-lg)',
+        padding: '0 1rem',
         marginBottom: '1rem',
-        border: '1px solid var(--color-border)',
-        boxShadow: 'var(--shadow-sm)'
+        display: 'flex',
+        flexDirection: 'column',
       }}>
         {messages.length === 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', color: 'var(--color-text-muted)' }}>
-            <div style={{ padding: '1rem', backgroundColor: 'var(--color-bg)', borderRadius: '50%', marginBottom: '1rem' }}>
-              <Info size={32} color="var(--color-primary-light)" />
-            </div>
-            <h3 style={{ marginBottom: '0.5rem', color: 'var(--color-text)' }}>Welcome to IP-SAKTI Sahayak</h3>
-            <p style={{ maxWidth: '450px', textAlign: 'center', fontSize: '0.9rem', marginBottom: '2rem' }}>
-              Navigate the complexities of Ayurveda Intellectual Property and Regulatory Compliance. Select a jurisdiction above and try a suggested query below.
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', height: '100%', color: 'var(--color-text-muted)', marginTop: '2rem' }}>
+            <p style={{ maxWidth: '450px', textAlign: 'center', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+              Ask questions about:
+              <br />
+              Patent protection · Traditional knowledge · Geographical indications · Biological resources · Ayurveda-related IP regulations
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.75rem', width: '100%', maxWidth: '580px' }}>
-              <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--color-text-muted)', marginBottom: '0.25rem', textAlign: 'center' }}>
-                {jurisdiction === 'india' ? '🇮🇳 India — Suggested Queries' : jurisdiction === 'international' ? '🌐 International — Suggested Queries' : '⚖️ Multi-Jurisdiction Queries'}
-              </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '0.5rem', width: '100%', maxWidth: '600px' }}>
               {suggestedQuestions.map((q, idx) => (
                 <button
                   key={idx}
                   className="btn btn-ghost"
                   style={{
                     textAlign: 'left',
-                    padding: '0.9rem 1rem',
-                    fontSize: '0.9rem',
+                    padding: '0.5rem 0.75rem',
+                    fontSize: '0.8rem',
                     backgroundColor: 'var(--color-bg)',
                     border: '1px solid var(--color-border)',
-                    borderRadius: 'var(--radius-md)',
-                    lineHeight: 1.4
+                    borderRadius: '9999px',
+                    color: 'var(--color-text)',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.2s',
                   }}
+                  onMouseOver={(e) => e.target.style.backgroundColor = 'var(--color-surface)'}
+                  onMouseOut={(e) => e.target.style.backgroundColor = 'var(--color-bg)'}
                   onClick={() => sendMessage(q)}
                 >
                   {q}

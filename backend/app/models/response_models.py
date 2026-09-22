@@ -13,7 +13,10 @@ class SourceCitation(BaseModel):
     publication_date: Optional[str] = None
     official_url: Optional[str] = None
     chunk_number: int
+    page_number: Optional[int] = None      # page from which the chunk was extracted
+    filename: Optional[str] = None         # original filename
     relevance_score: float
+
 
 class ChatResponse(BaseModel):
     answer: str

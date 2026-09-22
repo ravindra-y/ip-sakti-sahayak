@@ -203,28 +203,7 @@ const Layout = ({ children }) => {
         </div>
       </main>
 
-      <footer style={{
-        backgroundColor: 'white',
-        borderTop: '1px solid var(--color-border)',
-        padding: '2rem 0',
-        textAlign: 'center',
-        color: 'var(--color-text-muted)',
-        fontSize: '0.875rem'
-      }}>
-        <div className="container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, color: 'var(--color-primary)' }}>
-            <ShieldCheck size={18} />
-            IP-SAKTI Sahayak — SIH 2024 Project
-          </div>
-          <p style={{ margin: 0, maxWidth: '600px' }}>
-            A demonstration RAG system for Ayurveda Intellectual Property and regulatory guidance.
-            <strong> Information provided is not legal advice.</strong>
-          </p>
-          <div style={{ opacity: 0.6, fontSize: '0.75rem' }}>
-            React · FastAPI · Ollama · ChromaDB · sentence-transformers
-          </div>
-        </div>
-      </footer>
+
     </div>
   );
 };

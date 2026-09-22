@@ -49,9 +49,10 @@ async def upload_document(
         raise HTTPException(status_code=400, detail=f"File exceeds maximum size of {settings.max_file_size_mb}MB")
 
 
-    # Save file
+    # Save file — absolute path relative to this file's location
     jurisdiction = meta.jurisdiction.value
-    raw_dir = os.path.join("data", "raw", jurisdiction)
+    backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    raw_dir = os.path.join(backend_dir, "data", "raw", jurisdiction)
     os.makedirs(raw_dir, exist_ok=True)
 
     doc_id = str(uuid.uuid4())
@@ -61,14 +62,14 @@ async def upload_document(
     with open(file_path, "wb") as f:
         f.write(file.file.read())
 
-    # Extract text — clean up orphan file on any failure
+    # Extract text per page — preserve page numbers for citation
     try:
         reader = PdfReader(file_path)
-        text = ""
-        for page in reader.pages:
+        page_texts = []
+        for page_num, page in enumerate(reader.pages, 1):
             extracted = page.extract_text()
-            if extracted:
-                text += extracted + "\n"
+            if extracted and extracted.strip():
+                page_texts.append({"page": page_num, "text": extracted})
     except Exception as e:
         try:
             os.remove(file_path)
@@ -76,8 +77,40 @@ async def upload_document(
             pass
         raise HTTPException(status_code=422, detail=f"Failed to read PDF: {str(e)}")
 
-    text = clean_text(text)
-    chunks = chunk_text(text)
+    # Build chunks with page metadata
+    all_chunks = []
+    all_chunk_meta = []
+    chunk_idx = 0
+
+    for page_info in page_texts:
+        cleaned = clean_text(page_info["text"])
+        page_chunks = chunk_text(cleaned)
+        for chunk in page_chunks:
+            all_chunks.append(chunk)
+            chunk_meta: dict = {
+                "document_id": doc_id,
+                "title": meta.title,
+                "source": meta.source,
+                "jurisdiction": jurisdiction,
+                "category": meta.category,
+                "authority": meta.authority,
+                "document_type": meta.document_type,
+                "chunk_number": chunk_idx,
+                "page_number": page_info["page"],
+                "filename": file.filename,
+            }
+            if meta.version:
+                chunk_meta["version"] = meta.version
+            if meta.publication_date:
+                chunk_meta["publication_date"] = meta.publication_date
+            if meta.effective_date:
+                chunk_meta["effective_date"] = meta.effective_date
+            if meta.official_url:
+                chunk_meta["official_url"] = meta.official_url
+            all_chunk_meta.append(chunk_meta)
+            chunk_idx += 1
+
+    chunks = all_chunks
 
     if not chunks:
         try:
@@ -111,31 +144,7 @@ async def upload_document(
         chunk_count=len(chunks),
     )
 
-    # Store in ChromaDB — only include metadata values that are not None
-    chunk_metadata_list = []
-    for i in range(len(chunks)):
-        chunk_meta: dict = {
-            "document_id": doc_id,
-            "title": meta.title,
-            "source": meta.source,
-            "jurisdiction": jurisdiction,
-            "category": meta.category,
-            "authority": meta.authority,
-            "document_type": meta.document_type,
-            "chunk_number": i,
-        }
-        if meta.version:
-            chunk_meta["version"] = meta.version
-        if meta.publication_date:
-            chunk_meta["publication_date"] = meta.publication_date
-        if meta.effective_date:
-            chunk_meta["effective_date"] = meta.effective_date
-        if meta.official_url:
-            chunk_meta["official_url"] = meta.official_url
-
-        chunk_metadata_list.append(chunk_meta)
-
-    vector_store.add_document_chunks(jurisdiction, doc_id, chunks, embeddings, chunk_metadata_list)
+    vector_store.add_document_chunks(jurisdiction, doc_id, chunks, embeddings, all_chunk_meta)
 
     return DocumentMetadataResponse(
         document_id=doc_id,

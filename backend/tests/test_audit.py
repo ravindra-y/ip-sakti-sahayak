@@ -451,7 +451,7 @@ class TestSQLite:
 
 # ==== 12. VALIDATORS ====
 class TestValidators:
-    def test_short_question(self): assert not validate_question("ab")[0]
+    def test_short_question(self): assert validate_question("ab")[0]
     def test_empty_question(self): assert not validate_question("")[0]
     def test_long_question(self): assert not validate_question("x"*2001)[0]
     def test_valid_question(self): assert validate_question("What is a patent?")[0]

@@ -3,6 +3,7 @@ import CitationCard from './CitationCard';
 import ConfidenceBadge from './ConfidenceBadge';
 import { User, ShieldCheck, AlertTriangle, Activity } from 'lucide-react';
 import { useDemoMode } from '../../context/DemoModeContext';
+import ReactMarkdown from 'react-markdown';
 
 const MessageBubble = ({ message }) => {
   const isUser = message.role === 'user';
@@ -67,8 +68,8 @@ const MessageBubble = ({ message }) => {
             </div>
           )}
           
-          <div style={{ whiteSpace: 'pre-wrap', marginBottom: '0.5rem', lineHeight: '1.6' }}>
-            {message.content}
+          <div style={{ marginBottom: '0.5rem', lineHeight: '1.6', overflowWrap: 'anywhere' }} className="markdown-body">
+            <ReactMarkdown>{message.content}</ReactMarkdown>
           </div>
 
           {!isUser && message.retrieval_confidence !== undefined && (

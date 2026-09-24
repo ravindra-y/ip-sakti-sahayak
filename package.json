@@ -4,9 +4,10 @@
   "description": "**Multilingual RAG AI Assistant for Ayurveda Intellectual Property & Regulatory Guidance**",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev": "concurrently \"npm run dev:ollama\" \"npm run dev:frontend\" \"npm run dev:backend\"",
     "dev:frontend": "cd frontend && npm run dev",
-    "dev:backend": "cd backend && venv\\Scripts\\python.exe -m uvicorn app.main:app --reload --port 8000"
+    "dev:backend": "cd backend && venv\\Scripts\\python.exe -m uvicorn app.main:app --reload --port 8000",
+    "dev:ollama": "set CUDA_VISIBLE_DEVICES=-1 && ollama serve"
   },
   "repository": {
     "type": "git",

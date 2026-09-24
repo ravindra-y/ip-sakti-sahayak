@@ -1,11 +1,10 @@
 from typing import List, Tuple, Optional
 
 def should_abstain(search_results: List[dict], confidence: float, threshold: float) -> Tuple[bool, Optional[str]]:
+    # Only abstain if there are literally zero results in the vector store
+    # The LLM is responsible for handling low-confidence context (system prompt handles this)
     if not search_results:
         return True, "No relevant documents found in the knowledge base."
-        
-    if confidence < threshold:
-        return True, f"Retrieval confidence ({confidence:.2f}) is below threshold ({threshold:.2f})."
         
     return False, None
 

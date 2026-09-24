@@ -1,5 +1,6 @@
 import httpx
 import json
+import re
 
 class OllamaUnavailableError(Exception):
     pass
@@ -9,6 +10,12 @@ class OllamaClient:
         self.base_url = base_url
         self.model = model
 
+    def _strip_think_tags(self, text: str) -> str:
+        """Strip <think>...</think> reasoning tags produced by qwen3 and similar models."""
+        # Remove <think>...</think> blocks (including multiline)
+        text = re.sub(r'<think>.*?</think>', '', text, flags=re.DOTALL)
+        return text.strip()
+
     async def generate(self, prompt: str, system_prompt: str, max_tokens: int = 1024) -> str:
         url = f"{self.base_url}/api/generate"
         payload = {
@@ -16,16 +23,19 @@ class OllamaClient:
             "prompt": prompt,
             "system": system_prompt,
             "stream": False,
+            "think": False,   # Disable chain-of-thought for faster responses
             "options": {
-                "num_predict": max_tokens
+                "num_predict": max_tokens,
+                "temperature": 0.1,  # Low temperature for factual accuracy
             }
         }
         
         try:
             async with httpx.AsyncClient() as client:
-                response = await client.post(url, json=payload, timeout=60.0)
+                response = await client.post(url, json=payload, timeout=120.0)
                 response.raise_for_status()
-                return response.json()["response"]
+                raw = response.json().get("response", "")
+                return self._strip_think_tags(raw)
         except Exception as e:
             raise OllamaUnavailableError(f"Failed to communicate with Ollama: {str(e)}")
 

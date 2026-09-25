@@ -4,10 +4,10 @@
   "description": "**Multilingual RAG AI Assistant for Ayurveda Intellectual Property & Regulatory Guidance**",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently \"npm run dev:ollama\" \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev": "concurrently --names \"OLLAMA,FRONT,BACK\" --prefix-colors \"magenta,cyan,green\" --prefix \"[{name}]\" --kill-others-on-fail \"npm run dev:ollama\" \"npm run dev:frontend\" \"npm run dev:backend\"",
     "dev:frontend": "cd frontend && npm run dev",
-    "dev:backend": "cd backend && venv\\Scripts\\python.exe -m uvicorn app.main:app --reload --port 8000",
-    "dev:ollama": "set CUDA_VISIBLE_DEVICES=-1 && ollama serve"
+    "dev:backend": "cd backend && venv\\Scripts\\python.exe -m uvicorn app.main:app --port 8000 --log-level warning",
+    "dev:ollama": "cmd /c \"set CUDA_VISIBLE_DEVICES=-1 && ollama serve > nul 2>&1\""
   },
   "repository": {
     "type": "git",

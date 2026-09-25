@@ -1,18 +1,13 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { ShieldCheck, MessageSquare, FlaskConical, Scale, BookOpen, Info, Menu, X, Network, Monitor } from 'lucide-react';
-import { useDemoMode } from '../../context/DemoModeContext';
+import { ShieldCheck, MessageSquare, BookOpen, Info, Menu, X } from 'lucide-react';
 
 const Layout = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { isDemoMode, toggleDemoMode } = useDemoMode();
 
   const navItems = [
     { path: '/', label: 'Chat', icon: <MessageSquare size={18} /> },
-    { path: '/formulation', label: 'Formulation', icon: <FlaskConical size={18} /> },
-    { path: '/abs-helper', label: 'ABS Helper', icon: <Scale size={18} /> },
     { path: '/sources', label: 'Knowledge Base', icon: <BookOpen size={18} /> },
-    { path: '/architecture', label: 'Architecture', icon: <Network size={18} /> },
     { path: '/about', label: 'About', icon: <Info size={18} /> }
   ];
 
@@ -75,30 +70,6 @@ const Layout = ({ children }) => {
                 {item.label}
               </NavLink>
             ))}
-
-            {/* Demo Mode Toggle */}
-            <button
-              onClick={toggleDemoMode}
-              title={isDemoMode ? 'Disable Demo Mode' : 'Enable Demo Mode for SIH Presentation'}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                background: isDemoMode ? 'rgba(255,200,0,0.2)' : 'rgba(255,255,255,0.08)',
-                border: isDemoMode ? '1px solid rgba(255,200,0,0.5)' : '1px solid rgba(255,255,255,0.2)',
-                color: isDemoMode ? '#FFD700' : 'rgba(255,255,255,0.75)',
-                padding: '0.4rem 0.75rem',
-                borderRadius: 'var(--radius-sm)',
-                cursor: 'pointer',
-                fontSize: '0.8rem',
-                fontWeight: 600,
-                marginLeft: '0.5rem',
-                transition: 'all 0.2s'
-              }}
-            >
-              <Monitor size={16} />
-              {isDemoMode ? 'Demo ON' : 'Demo'}
-            </button>
           </nav>
 
           {/* Mobile Toggle */}
@@ -148,25 +119,6 @@ const Layout = ({ children }) => {
                 {item.label}
               </NavLink>
             ))}
-            <button
-              onClick={toggleDemoMode}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.75rem',
-                color: isDemoMode ? '#FFD700' : 'rgba(255,255,255,0.8)',
-                background: 'none',
-                border: 'none',
-                padding: '1rem',
-                cursor: 'pointer',
-                fontSize: '1rem',
-                fontWeight: 600,
-                borderTop: '1px solid rgba(255,255,255,0.1)'
-              }}
-            >
-              <Monitor size={20} />
-              Demo Mode: {isDemoMode ? 'ON' : 'OFF'}
-            </button>
           </nav>
         )}
       </header>
@@ -181,29 +133,9 @@ const Layout = ({ children }) => {
 
       <main style={{ flex: 1, padding: '2rem 0' }}>
         <div className="container">
-          {isDemoMode && (
-            <div style={{
-              marginBottom: '1rem',
-              padding: '0.5rem 1rem',
-              backgroundColor: 'rgba(255, 200, 0, 0.08)',
-              border: '1px solid rgba(255, 200, 0, 0.3)',
-              borderRadius: 'var(--radius-sm)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              fontSize: '0.8rem',
-              color: '#856C00',
-              fontWeight: 500
-            }}>
-              <Monitor size={16} />
-              <strong>Demo Mode Active</strong> — Technical execution metadata is visible on all AI responses. Disable via the Demo button in the navigation.
-            </div>
-          )}
           {children}
         </div>
       </main>
-
-
     </div>
   );
 };

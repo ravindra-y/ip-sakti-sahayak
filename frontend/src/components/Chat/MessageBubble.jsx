@@ -1,13 +1,11 @@
 import React from 'react';
 import CitationCard from './CitationCard';
 import ConfidenceBadge from './ConfidenceBadge';
-import { User, ShieldCheck, AlertTriangle, Activity } from 'lucide-react';
-import { useDemoMode } from '../../context/DemoModeContext';
+import { User, ShieldCheck, AlertTriangle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 const MessageBubble = ({ message }) => {
   const isUser = message.role === 'user';
-  const { isDemoMode } = useDemoMode();
 
   return (
     <div style={{
@@ -96,50 +94,6 @@ const MessageBubble = ({ message }) => {
             </div>
           )}
 
-          {!isUser && isDemoMode && (
-            <div style={{
-              marginTop: '1rem',
-              padding: '0.75rem',
-              backgroundColor: 'rgba(255,200,0,0.06)',
-              border: '1px solid rgba(255,200,0,0.3)',
-              borderRadius: 'var(--radius-sm)',
-              fontSize: '0.8rem'
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, color: '#856C00', marginBottom: '0.5rem' }}>
-                <Activity size={14} /> DEMO — Execution Metadata
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', color: 'var(--color-text-muted)' }}>
-                {message.query_category && (
-                  <div><span style={{ fontWeight: 600 }}>Category:</span> {message.query_category}</div>
-                )}
-                {message.jurisdiction && (
-                  <div><span style={{ fontWeight: 600 }}>Jurisdiction:</span> {message.jurisdiction}</div>
-                )}
-                {message.retrieval_confidence !== undefined && (
-                  <div><span style={{ fontWeight: 600 }}>Confidence:</span> {(message.retrieval_confidence * 100).toFixed(1)}%</div>
-                )}
-                {message.sources !== undefined && (
-                  <div><span style={{ fontWeight: 600 }}>Docs Retrieved:</span> {message.sources?.length ?? 0}</div>
-                )}
-                {message.abstained !== undefined && (
-                  <div><span style={{ fontWeight: 600 }}>Abstained:</span> {message.abstained ? 'Yes' : 'No'}</div>
-                )}
-                {message.processing_time_ms !== undefined && message.processing_time_ms !== null && (
-                  <div><span style={{ fontWeight: 600 }}>Time:</span> {message.processing_time_ms?.toFixed(0)}ms</div>
-                )}
-              </div>
-              {message.sources && message.sources.length > 0 && (
-                <div style={{ marginTop: '0.4rem', color: 'var(--color-text-muted)' }}>
-                  <span style={{ fontWeight: 600 }}>Source IDs:</span>{' '}
-                  {message.sources.map((s, i) => (
-                    <code key={i} style={{ fontSize: '0.7rem', backgroundColor: 'rgba(0,0,0,0.04)', padding: '1px 4px', borderRadius: '2px', marginRight: '0.25rem' }}>
-                      {s.document_id ? s.document_id.slice(0, 8) + '...' : `src-${i+1}`}
-                    </code>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
         </div>
         <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '0.4rem', padding: '0 0.5rem', opacity: 0.6 }}>
           {isUser ? 'You' : 'IP-SHAKTI Sahayak'}

@@ -1,19 +1,33 @@
 @echo off
-title IP-SAKTI Sahayak - Stopping All Services
-color 0C
+title IP-SAKTI Sahayak - Stop
+chcp 65001 >nul
 
-echo Stopping all IP-SAKTI Sahayak services...
+:: ANSI colors
+set "G=[92m"
+set "R=[91m"
+set "C=[96m"
+set "W=[97m"
+set "B=[90m"
+set "RESET=[0m"
+set "BOLD=[1m"
+
+cls
+echo.
+echo  %R%%BOLD%  ╔══════════════════════════════════╗%RESET%
+echo  %R%%BOLD%  ║    IP-SAKTI Sahayak  Stopping    ║%RESET%
+echo  %R%%BOLD%  ╚══════════════════════════════════╝%RESET%
 echo.
 
 taskkill /F /IM ollama.exe /T >nul 2>&1
-echo [OK] Ollama stopped.
+echo  %G%  [✓]%RESET% Ollama stopped
 
 for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":8000"') do taskkill /F /PID %%a >nul 2>&1
-echo [OK] Backend stopped.
+echo  %G%  [✓]%RESET% Backend stopped
 
 for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":5173"') do taskkill /F /PID %%a >nul 2>&1
-echo [OK] Frontend stopped.
+echo  %G%  [✓]%RESET% Frontend stopped
 
 echo.
-echo All services stopped.
-pause
+echo  %C%  All services stopped.%RESET%
+echo.
+timeout /t 2 /nobreak >nul

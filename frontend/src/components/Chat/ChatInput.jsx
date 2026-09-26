@@ -66,19 +66,8 @@ const ChatInput = ({ onSend, isLoading, jurisdiction, conversationId }) => {
   };
 
   return (
-    <div style={{ padding: '0 0 1rem', backgroundColor: 'var(--color-bg)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        backgroundColor: 'var(--color-surface)',
-        padding: '0.5rem 1rem',
-        borderRadius: '9999px',
-        boxShadow: 'var(--shadow-sm)',
-        border: '1px solid var(--color-border)',
-        width: '100%',
-        maxWidth: '800px',
-        minHeight: '60px'
-      }}>
+    <div className="chat-input-area">
+      <div className="chat-input-wrapper">
         <button
           className="btn btn-ghost"
           style={{ padding: '0.5rem', borderRadius: '50%', color: 'var(--color-text-muted)', flexShrink: 0, border: 'none', background: 'transparent', cursor: 'pointer' }}
@@ -88,58 +77,31 @@ const ChatInput = ({ onSend, isLoading, jurisdiction, conversationId }) => {
         >
           <Headset size={20} />
         </button>
-        <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center', marginLeft: '0.5rem' }}>
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <textarea
             ref={textareaRef}
-            className="form-control"
+            className="chat-input-textarea"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Ask IP-SHAKTI a question..."
+            placeholder="Ask about IP acts, rules, traditional knowledge..."
             disabled={isLoading}
-            style={{
-              resize: 'none',
-              overflowY: 'auto',
-              minHeight: '24px',
-              border: 'none',
-              boxShadow: 'none',
-              padding: '0',
-              paddingRight: '3rem',
-              backgroundColor: 'transparent',
-              fontSize: '1rem',
-              outline: 'none',
-              width: '100%'
-            }}
             rows={1}
           />
-          <div style={{ position: 'absolute', right: '0.5rem', bottom: '0', fontSize: '0.65rem', color: 'var(--color-text-muted)', opacity: 0.6, pointerEvents: 'none' }}>
+          <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-light)', opacity: 0.7, pointerEvents: 'none', flexShrink: 0 }}>
             {input.length}/1000
           </div>
         </div>
         <button
-          className="btn btn-primary"
+          className="btn btn-primary btn-sm"
           onClick={handleSend}
           disabled={!input.trim() || isLoading}
-          style={{
-            height: '40px',
-            width: '40px',
-            padding: 0,
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-            border: 'none',
-            backgroundColor: (input.trim() && !isLoading) ? 'var(--color-primary)' : 'var(--color-border)',
-            color: 'white',
-            cursor: (input.trim() && !isLoading) ? 'pointer' : 'default',
-            transition: 'background-color 0.2s'
-          }}
+          style={{ flexShrink: 0, borderRadius: 'var(--radius-sm)', minWidth: 72 }}
         >
           {isLoading ? (
-            <div style={{ width: '18px', height: '18px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+            <div style={{ width: '14px', height: '14px', border: '2px solid rgba(255,255,255,0.3)', borderTopColor: 'white', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
           ) : (
-            <Send size={18} style={{ marginLeft: '2px' }} />
+            <><Send size={14} /> Submit</>
           )}
         </button>
       </div>

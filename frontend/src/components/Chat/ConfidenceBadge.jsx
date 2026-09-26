@@ -1,42 +1,33 @@
 import React from 'react';
-import { Target } from 'lucide-react';
+import { Target, TrendingUp } from 'lucide-react';
 
+/**
+ * ConfidenceBadge — redesigned as a meter component.
+ * Renders a small label + bar + percentage, not a plain pill.
+ */
 const ConfidenceBadge = ({ confidence }) => {
-  let color = 'var(--color-error)';
-  let bgColor = 'var(--color-error-light)';
-  let borderColor = '#F5B7B1';
-  
-  if (confidence >= 0.6) {
-    color = 'var(--color-success)';
-    bgColor = 'var(--color-success-light)';
-    borderColor = '#82E0AA';
-  } else if (confidence >= 0.35) {
-    color = 'var(--color-warning)';
-    bgColor = 'var(--color-warning-light)';
-    borderColor = '#F8C471';
-  }
+  const pct = Math.round(confidence * 100);
 
-  const percentage = Math.round(confidence * 100);
+  let fillClass = 'confidence-meter__fill--low';
+  let label     = 'Low';
+  if (confidence >= 0.6)  { fillClass = 'confidence-meter__fill--high';   label = 'High'; }
+  else if (confidence >= 0.35) { fillClass = 'confidence-meter__fill--medium'; label = 'Moderate'; }
 
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', backgroundColor: 'var(--color-surface)', padding: '0.25rem 0.5rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-sm)' }}>
-      <Target size={14} color="var(--color-text-muted)" />
-      <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 500 }}>Retrieval Confidence:</span>
-      <span
-        title="Indicates how closely the retrieved sources matched your query. Does not represent legal or factual certainty."
-        style={{
-          backgroundColor: bgColor,
-          color: color,
-          padding: '2px 8px',
-          borderRadius: '9999px',
-          fontSize: '0.75rem',
-          fontWeight: 600,
-          cursor: 'help',
-          border: `1px solid ${borderColor}`,
-          letterSpacing: '0.02em'
-        }}
-      >
-        {percentage}%
+    <div
+      className="confidence-meter"
+      title="Retrieval confidence indicates how closely the retrieved sources matched your query. It does not represent legal or factual certainty."
+    >
+      <Target size={12} color="var(--color-text-light)" />
+      <span>Retrieval confidence</span>
+      <div className="confidence-meter__bar">
+        <div
+          className={`confidence-meter__fill ${fillClass}`}
+          style={{ width: `${pct}%` }}
+        />
+      </div>
+      <span style={{ fontWeight: 600, color: fillClass.includes('high') ? 'var(--color-success)' : fillClass.includes('medium') ? 'var(--color-warning)' : 'var(--color-error)' }}>
+        {pct}% · {label}
       </span>
     </div>
   );

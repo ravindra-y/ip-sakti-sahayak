@@ -1,23 +1,28 @@
 import React from 'react';
+import { AlertTriangle, Info } from 'lucide-react';
 
-const DisclaimerBar = ({ message, type = 'warning' }) => {
-  const isWarning = type === 'warning';
-  
+/**
+ * DisclaimerBar — redesigned as a proper status-alert component.
+ * Replaces the plain text disclaimer line with a structured alert.
+ *
+ * type: 'warning' | 'info' | 'error' | 'success'
+ * variant: 'banner' (full-width, compact) | 'block' (padded card-style)
+ */
+const DisclaimerBar = ({
+  message,
+  title,
+  type = 'warning',
+  variant = 'banner',
+}) => {
+  const Icon = type === 'info' ? Info : AlertTriangle;
+
   return (
-    <div style={{
-      backgroundColor: isWarning ? '#fff3cd' : '#e2e3e5',
-      color: isWarning ? '#856404' : '#383d41',
-      padding: '0.75rem 1rem',
-      borderRadius: '4px',
-      borderLeft: `4px solid ${isWarning ? 'var(--color-warning)' : 'var(--color-text-muted)'}`,
-      fontSize: '0.875rem',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.5rem',
-      marginBottom: '1rem'
-    }}>
-      <span style={{ fontSize: '1.25rem' }}>{isWarning ? '⚠️' : 'ℹ️'}</span>
-      <span>{message}</span>
+    <div className={`status-alert status-alert--${type}`} style={variant === 'banner' ? { borderRadius: 0, border: 'none', borderBottom: '1px solid' } : {}}>
+      <Icon size={15} className="status-alert__icon" />
+      <div className="status-alert__content">
+        {title && <span className="status-alert__title">{title}</span>}
+        <span>{message}</span>
+      </div>
     </div>
   );
 };

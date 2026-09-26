@@ -52,11 +52,14 @@ ChromaDB    Ollama (qwen3:1.7b)
 
 ## Installation
 
-### 1. Clone the Repository
+### 1. Clone the Repository & Install Dependencies
 
 ```bash
 git clone <repo-url>
 cd ip-sakti-sahayak
+
+# Install root dependencies (concurrently runner)
+npm install
 ```
 
 ### 2. Ollama Setup
@@ -91,11 +94,13 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 # Create .env file
-copy .env.example .env
+copy .env.example .env    # Windows
+# or: cp .env.example .env # Linux/macOS
 # Edit .env if needed
 
 # Initialize database directories
 mkdir -p data/raw/india data/raw/international data/processed data/chroma_db
+cd ..
 ```
 
 ### 4. Frontend Setup
@@ -103,31 +108,72 @@ mkdir -p data/raw/india data/raw/international data/processed data/chroma_db
 ```bash
 cd frontend
 npm install
+cd ..
 ```
 
 ---
 
 ## Running the Application
 
-### Backend
+### Option 1: Quick Start (Single Command - Recommended)
+
+From the project root directory, run:
 
 ```bash
-cd backend
-# Activate venv first
-.\venv\Scripts\uvicorn.exe app.main:app --reload --port 8000
+npm run dev
 ```
 
-Backend API available at: http://localhost:8000
-API docs: http://localhost:8000/docs
+This starts all three services concurrently in one terminal:
+- **Ollama**: Background model serving (`npm run dev:ollama`)
+- **Backend API**: FastAPI on `http://localhost:8000` (`npm run dev:backend`)
+- **Frontend UI**: React Vite dev server on `http://localhost:5173` (`npm run dev:frontend`)
 
-### Frontend
+All service logs are displayed together with color-coded prefixes (`[OLLAMA]`, `[FRONT]`, `[BACK]`).
 
+#### Individual Component Scripts
+You can also run specific components from the root directory:
+- `npm run dev:frontend` — Start frontend only
+- `npm run dev:backend` — Start backend only
+- `npm run dev:ollama` — Start Ollama serve only
+
+---
+
+### Option 2: Windows Batch Scripts (One-Click)
+
+On Windows, you can also use the included batch scripts:
+- **`start_all.bat`**: Starts Ollama, backend, and frontend in minimized windows with automatic health checks until ready.
+- **`stop_all.bat`**: Gracefully terminates all background services.
+
+---
+
+### Option 3: Manual Startup (Separate Terminals)
+
+If you need separate terminal windows or standard hot-reload debugging:
+
+**Terminal 1 — Ollama:**
+```bash
+ollama serve
+```
+
+**Terminal 2 — Backend:**
+```bash
+cd backend
+# Windows:
+venv\Scripts\activate
+uvicorn app.main:app --reload --port 8000
+# Linux/macOS:
+source venv/bin/activate
+uvicorn app.main:app --reload --port 8000
+```
+- API URL: http://localhost:8000
+- Swagger Docs: http://localhost:8000/docs
+
+**Terminal 3 — Frontend:**
 ```bash
 cd frontend
 npm run dev
 ```
-
-Frontend available at: http://localhost:5173
+- Web UI: http://localhost:5173
 
 ---
 
@@ -160,6 +206,21 @@ Seed authoritative source metadata (without uploading documents):
 
 ```bash
 python scripts/seed_sources.py
+```
+
+### Batch Ingestion (All Categorized PDFs)
+
+To ingest all pre-categorized authoritative documents from the `data/` directory at once, start the backend and run:
+
+```bash
+# Windows
+cd backend
+.\venv\Scripts\python.exe ..\scripts\ingest_all_data.py
+
+# Linux/macOS
+cd backend
+source venv/bin/activate
+python ../scripts/ingest_all_data.py
 ```
 
 ---
@@ -256,6 +317,13 @@ ip-sakti-sahayak/
 │   │   └── styles/globals.css   # Design system
 │   ├── package.json
 │   └── vite.config.js
+├── data/                        # Categorized PDF documents for ingestion
+├── scripts/
+│   ├── ingest_all_data.py       # Batch ingestion script
+│   └── ingest_sample_data.py    # Sample data ingestion script
+├── package.json                 # Unified runner (npm run dev via concurrently)
+├── start_all.bat                # Windows one-click startup script
+├── stop_all.bat                 # Windows one-click shutdown script
 ├── docker-compose.yml
 └── README.md
 ```

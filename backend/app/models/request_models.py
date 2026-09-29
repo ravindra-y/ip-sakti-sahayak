@@ -15,11 +15,11 @@ class ChatRequest(BaseModel):
 
 class DocumentUploadMetadata(BaseModel):
     title: str
-    source: str
-    jurisdiction: Jurisdiction # Frontend should enforce INDIA or INTERNATIONAL
-    category: str
-    authority: str
-    document_type: str
+    source: str = "Uploaded Document"
+    jurisdiction: Jurisdiction = Jurisdiction.INDIA
+    category: str = "GENERAL"
+    authority: str = "Self-Uploaded"
+    document_type: str = "Document"
     version: Optional[str] = None
     publication_date: Optional[str] = None
     effective_date: Optional[str] = None

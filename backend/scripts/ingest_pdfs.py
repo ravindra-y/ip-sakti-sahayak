@@ -45,17 +45,17 @@ from app.database.crud import create_document_metadata, list_document_metadata
 
 
 # ── Category and jurisdiction mapping based on directory names ────────────────
-DIR_METADATA = {
+INDIA_DIR_METADATA = {
     "01_PATENTS": {
         "category": "PATENT",
         "jurisdiction": "india",
-        "authority": "Office of the Controller General of Patents, Designs & Trade Marks",
+        "authority": "Office of the Controller General of Patents, Designs & Trade Marks (CGPDTM)",
         "document_type": "Act/Rules",
     },
     "02_PATENT_GUIDELINES": {
         "category": "PATENT",
         "jurisdiction": "india",
-        "authority": "Office of the Controller General of Patents, Designs & Trade Marks",
+        "authority": "Office of the Controller General of Patents, Designs & Trade Marks (CGPDTM)",
         "document_type": "Guidelines",
     },
     "03_TRADEMARK": {
@@ -67,7 +67,7 @@ DIR_METADATA = {
     "04_GI": {
         "category": "GEOGRAPHICAL_INDICATION",
         "jurisdiction": "india",
-        "authority": "GI Registry, CGPDTM",
+        "authority": "Geographical Indications Registry, CGPDTM",
         "document_type": "Act/Rules",
     },
     "05_DESIGNS": {
@@ -79,14 +79,14 @@ DIR_METADATA = {
     "06_COPYRIGHT": {
         "category": "COPYRIGHT",
         "jurisdiction": "india",
-        "authority": "Copyright Office, India",
+        "authority": "Copyright Office, Government of India",
         "document_type": "Act/Rules",
     },
     "07_BIODIVERSITY_ABS": {
         "category": "ABS",
         "jurisdiction": "india",
-        "authority": "National Biodiversity Authority",
-        "document_type": "Act/Rules",
+        "authority": "National Biodiversity Authority (NBA)",
+        "document_type": "Act/Rules/Regulations",
     },
     "08_AYUSH_REGULATORY": {
         "category": "REGULATORY",
@@ -97,25 +97,52 @@ DIR_METADATA = {
     "09_FSSAI": {
         "category": "REGULATORY",
         "jurisdiction": "india",
-        "authority": "Food Safety and Standards Authority of India",
+        "authority": "Food Safety and Standards Authority of India (FSSAI)",
         "document_type": "Regulations",
     },
     "10_PPVR": {
         "category": "TRADITIONAL_KNOWLEDGE",
         "jurisdiction": "india",
-        "authority": "Protection of Plant Varieties and Farmers' Rights Authority",
+        "authority": "Protection of Plant Varieties and Farmers' Rights Authority (PPVFRA)",
         "document_type": "Act/Rules",
     },
     "12_SECONDARY_REFERENCE": {
         "category": "GENERAL",
         "jurisdiction": "india",
-        "authority": "Various",
+        "authority": "Various Government Sources",
+        "document_type": "Reference",
+    },
+}
+
+INTERNATIONAL_DIR_METADATA = {
+    "01_Global_IP": {
+        "category": "GENERAL",
+        "jurisdiction": "international",
+        "authority": "WIPO (World Intellectual Property Organization)",
+        "document_type": "Convention/Treaty",
+    },
+    "02_PATENTS": {
+        "category": "PATENT",
+        "jurisdiction": "international",
+        "authority": "WIPO (World Intellectual Property Organization)",
+        "document_type": "Treaty/Guidelines",
+    },
+    "06_TRADITIONAL_KNOWLEDGE": {
+        "category": "TRADITIONAL_KNOWLEDGE",
+        "jurisdiction": "international",
+        "authority": "WIPO (World Intellectual Property Organization)",
+        "document_type": "Treaty",
+    },
+    "12_SECONDARY_REFERENCE": {
+        "category": "GENERAL",
+        "jurisdiction": "international",
+        "authority": "BIRPI / WIPO",
         "document_type": "Reference",
     },
 }
 
 # Directories to skip entirely
-SKIP_DIRS = {"sample_docs"}
+SKIP_DIRS = {"sample_docs", ".git", ".venv", "venv", "node_modules", "__pycache__"}
 
 
 def get_file_hash(path: Path) -> str:
@@ -126,40 +153,120 @@ def get_file_hash(path: Path) -> str:
     return h.hexdigest()
 
 
-def discover_pdfs(data_dir: Path) -> list[dict]:
+def resolve_pdf_metadata(pdf_path: Path, data_dir: Path) -> tuple[dict, str]:
+    """
+    Resolve jurisdiction, category, authority, and document type
+    based on path location in the data hierarchy.
+    """
+    try:
+        rel = pdf_path.relative_to(data_dir)
+        parts = rel.parts
+    except ValueError:
+        parts = pdf_path.parts
+
+    parts_lower = [p.lower() for p in parts]
+
+    # 1. Determine jurisdiction
+    if "international" in parts_lower:
+        jurisdiction = "international"
+    elif "india" in parts_lower:
+        jurisdiction = "india"
+    else:
+        jurisdiction = "india"
+
+    # 2. Match directory metadata
+    meta = None
+    matched_dir = ""
+    target_dict = INTERNATIONAL_DIR_METADATA if jurisdiction == "international" else INDIA_DIR_METADATA
+
+    for part in parts:
+        for k, v in target_dict.items():
+            if part.lower() == k.lower():
+                meta = dict(v)
+                matched_dir = part
+                break
+        if meta:
+            break
+
+    # Fallback check against other dict
+    if not meta:
+        other_dict = INDIA_DIR_METADATA if jurisdiction == "international" else INTERNATIONAL_DIR_METADATA
+        for part in parts:
+            for k, v in other_dict.items():
+                if part.lower() == k.lower():
+                    meta = dict(v)
+                    matched_dir = part
+                    break
+            if meta:
+                break
+
+    if not meta:
+        meta = {
+            "category": "GENERAL",
+            "jurisdiction": jurisdiction,
+            "authority": "WIPO / International" if jurisdiction == "international" else "Government of India",
+            "document_type": "Document",
+        }
+        matched_dir = parts[0] if parts else ""
+
+    meta["jurisdiction"] = jurisdiction
+
+    # 3. Subdirectory refinements
+    for part in parts:
+        part_l = part.lower()
+        if "single_drugs" in part_l:
+            meta["document_type"] = "Ayurvedic Pharmacopoeia (Single Drugs)"
+            meta["authority"] = "PCIM&H / Ministry of AYUSH, Government of India"
+        elif "formulations" in part_l:
+            meta["document_type"] = "Ayurvedic Pharmacopoeia (Formulations)"
+            meta["authority"] = "PCIM&H / Ministry of AYUSH, Government of India"
+        elif "siddha" in part_l:
+            meta["authority"] = "PCIM&H / Ministry of AYUSH, Government of India"
+            meta["category"] = "REGULATORY"
+            meta["document_type"] = "Siddha Pharmacopoeia Amendment"
+        elif "unani" in part_l:
+            meta["authority"] = "PCIM&H / Ministry of AYUSH, Government of India"
+            meta["category"] = "REGULATORY"
+            meta["document_type"] = "Unani Formulary Amendment"
+        elif "historical" in part_l:
+            meta["document_type"] = "Historical Legal Document"
+        elif "amendments" in part_l:
+            meta["document_type"] = "Regulatory Amendment"
+
+    return meta, matched_dir
+
+
+def discover_pdfs(data_dir: Path, target_jurisdiction: str = "all") -> list[dict]:
     """
     Walk the data directory, returning a list of dicts:
         {path, title, jurisdiction, category, authority, document_type, source}
     """
     pdfs = []
     for pdf_path in sorted(data_dir.rglob("*.pdf")):
-        # Skip dirs
+        # Skip excluded dirs
         if any(skip in pdf_path.parts for skip in SKIP_DIRS):
             continue
 
-        # Determine top-level category dir
-        try:
-            rel = pdf_path.relative_to(data_dir)
-            top_dir = rel.parts[0]
-        except ValueError:
-            top_dir = ""
+        meta, matched_dir = resolve_pdf_metadata(pdf_path, data_dir)
 
-        meta = DIR_METADATA.get(top_dir, {
-            "category": "GENERAL",
-            "jurisdiction": "india",
-            "authority": "Government of India",
-            "document_type": "Document",
-        })
+        if target_jurisdiction != "all" and meta["jurisdiction"] != target_jurisdiction:
+            continue
 
-        # Build a human-readable title from the filename
-        title = pdf_path.stem
-        # Clean up common filename artifacts
-        title = title.replace("_", " ").replace("-", " — ").strip()
+        # Build clean, human-readable title
+        stem = pdf_path.stem
+        while stem.lower().endswith(".pdf"):
+            stem = stem[:-4].strip()
+        title = stem.replace("_", " ").replace("-", " — ")
+        # Clean double spaces
+        import re
+        title = re.sub(r"\s+", " ", title).strip()
+
+        source_label = f"{meta['jurisdiction']}/{matched_dir} / {pdf_path.name}" if matched_dir else f"{meta['jurisdiction']} / {pdf_path.name}"
 
         pdfs.append({
             "path": pdf_path,
             "title": title,
-            "source": f"{top_dir} / {pdf_path.name}",
+            "source": source_label,
             "jurisdiction": meta["jurisdiction"],
             "category": meta["category"],
             "authority": meta["authority"],
@@ -299,6 +406,12 @@ def main():
         help=f"Root directory containing PDFs (default: {DEFAULT_DATA_DIR})",
     )
     parser.add_argument(
+        "--jurisdiction",
+        choices=["all", "india", "international"],
+        default="all",
+        help="Filter ingestion by jurisdiction (default: all)",
+    )
+    parser.add_argument(
         "--reset",
         action="store_true",
         help="Clear vector store before ingesting (fresh rebuild)",
@@ -316,6 +429,7 @@ def main():
     print("  IP-SAKTI Sahayak — Batch PDF Ingestion")
     print("=" * 65)
     print(f"  Data directory : {data_dir}")
+    print(f"  Jurisdiction   : {args.jurisdiction}")
     print(f"  ChromaDB path  : {settings.chroma_db_path}")
     print(f"  SQLite path    : {settings.sqlite_database_path}")
     print(f"  Reset mode     : {args.reset}")
@@ -328,7 +442,7 @@ def main():
 
     # Discover PDFs
     print("\nDiscovering PDFs...")
-    pdf_list = discover_pdfs(data_dir)
+    pdf_list = discover_pdfs(data_dir, target_jurisdiction=args.jurisdiction)
     print(f"  Found {len(pdf_list)} PDF files")
 
     if not pdf_list:

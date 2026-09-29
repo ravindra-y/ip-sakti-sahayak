@@ -1,28 +1,18 @@
 #!/usr/bin/env python3
 """
-IP-SAKTI Sahayak — Full Data Ingestion Script
+IP-SAKTI Sahayak — Full Data Ingestion Script (API-based)
 
-Ingests ALL real PDFs from the data/ folder into the vector store.
+Ingests ALL real PDFs from the data/ folder (india and international)
+into the vector store via the FastAPI upload endpoint.
+
 Run AFTER starting the backend:
     cd backend && .\\venv\\Scripts\\python.exe ..\\scripts\\ingest_all_data.py
-
-Folder -> Category mapping:
-    01_PATENTS              -> Patents / india
-    02_PATENT_GUIDELINES    -> Patents / india
-    03_TRADEMARK            -> Trademark / india
-    04_GI                   -> Geographical Indications / india
-    05_DESIGNS              -> Industrial Designs / india
-    06_COPYRIGHT            -> Copyright / india
-    07_BIODIVERSITY_ABS     -> Biological Diversity / india
-    08_AYUSH_REGULATORY     -> AYUSH Regulatory / india
-    09_FSSAI                -> Food Safety / india
-    10_PPVR                 -> Plant Variety Protection / india
-    12_SECONDARY_REFERENCE  -> Secondary Reference / india
 """
 import os
+import re
 import sys
-import requests
 import json
+import requests
 from pathlib import Path
 
 BASE_URL = os.environ.get("API_URL", "http://localhost:8000")
@@ -30,75 +20,184 @@ BASE_URL = os.environ.get("API_URL", "http://localhost:8000")
 # Base data directory (relative to repo root)
 DATA_DIR = Path(__file__).parent.parent / "data"
 
-# Folder -> (category, authority, document_type) mapping
-FOLDER_MAP = {
+# ── Directory to Metadata Mappings ──────────────────────────────────────────
+INDIA_DIR_METADATA = {
     "01_PATENTS": {
-        "category": "Patents",
-        "authority": "CGPDTM, Government of India",
-        "document_type": "Act/Rules",
+        "category": "PATENT",
         "jurisdiction": "india",
+        "authority": "Office of the Controller General of Patents, Designs & Trade Marks (CGPDTM)",
+        "document_type": "Act/Rules",
     },
     "02_PATENT_GUIDELINES": {
-        "category": "Patents",
-        "authority": "CGPDTM, Government of India",
-        "document_type": "Guidelines",
+        "category": "PATENT",
         "jurisdiction": "india",
+        "authority": "Office of the Controller General of Patents, Designs & Trade Marks (CGPDTM)",
+        "document_type": "Guidelines",
     },
     "03_TRADEMARK": {
-        "category": "Trademark",
-        "authority": "Trade Marks Registry, Government of India",
-        "document_type": "Act/Rules",
+        "category": "TRADEMARK",
         "jurisdiction": "india",
+        "authority": "Trade Marks Registry, CGPDTM",
+        "document_type": "Act/Rules",
     },
     "04_GI": {
-        "category": "Geographical Indications",
-        "authority": "GI Registry, CGPDTM, Government of India",
-        "document_type": "Act/Rules",
+        "category": "GEOGRAPHICAL_INDICATION",
         "jurisdiction": "india",
+        "authority": "Geographical Indications Registry, CGPDTM",
+        "document_type": "Act/Rules",
     },
     "05_DESIGNS": {
-        "category": "Industrial Designs",
-        "authority": "Designs Wing, CGPDTM, Government of India",
-        "document_type": "Act/Rules",
+        "category": "DESIGN",
         "jurisdiction": "india",
+        "authority": "Designs Wing, CGPDTM",
+        "document_type": "Act/Rules",
     },
     "06_COPYRIGHT": {
-        "category": "Copyright",
+        "category": "COPYRIGHT",
+        "jurisdiction": "india",
         "authority": "Copyright Office, Government of India",
         "document_type": "Act/Rules",
-        "jurisdiction": "india",
     },
     "07_BIODIVERSITY_ABS": {
-        "category": "Biological Diversity",
-        "authority": "National Biodiversity Authority (NBA), Government of India",
-        "document_type": "Act/Rules/Regulations",
+        "category": "ABS",
         "jurisdiction": "india",
+        "authority": "National Biodiversity Authority (NBA)",
+        "document_type": "Act/Rules/Regulations",
     },
     "08_AYUSH_REGULATORY": {
-        "category": "AYUSH Regulatory",
-        "authority": "Ministry of AYUSH / CDSCO, Government of India",
-        "document_type": "Act/Rules",
+        "category": "REGULATORY",
         "jurisdiction": "india",
+        "authority": "Ministry of AYUSH / CDSCO",
+        "document_type": "Act/Rules",
     },
     "09_FSSAI": {
-        "category": "Food Safety",
+        "category": "REGULATORY",
+        "jurisdiction": "india",
         "authority": "Food Safety and Standards Authority of India (FSSAI)",
         "document_type": "Regulations",
-        "jurisdiction": "india",
     },
     "10_PPVR": {
-        "category": "Plant Variety Protection",
-        "authority": "Protection of Plant Varieties and Farmers Rights Authority (PPVFRA)",
-        "document_type": "Act/Rules",
+        "category": "TRADITIONAL_KNOWLEDGE",
         "jurisdiction": "india",
+        "authority": "Protection of Plant Varieties and Farmers' Rights Authority (PPVFRA)",
+        "document_type": "Act/Rules",
     },
     "12_SECONDARY_REFERENCE": {
-        "category": "Secondary Reference",
-        "authority": "Various Government Sources",
-        "document_type": "Reference Document",
+        "category": "GENERAL",
         "jurisdiction": "india",
+        "authority": "Various Government Sources",
+        "document_type": "Reference",
     },
 }
+
+INTERNATIONAL_DIR_METADATA = {
+    "01_Global_IP": {
+        "category": "GENERAL",
+        "jurisdiction": "international",
+        "authority": "WIPO (World Intellectual Property Organization)",
+        "document_type": "Convention/Treaty",
+    },
+    "02_PATENTS": {
+        "category": "PATENT",
+        "jurisdiction": "international",
+        "authority": "WIPO (World Intellectual Property Organization)",
+        "document_type": "Treaty/Guidelines",
+    },
+    "06_TRADITIONAL_KNOWLEDGE": {
+        "category": "TRADITIONAL_KNOWLEDGE",
+        "jurisdiction": "international",
+        "authority": "WIPO (World Intellectual Property Organization)",
+        "document_type": "Treaty",
+    },
+    "12_SECONDARY_REFERENCE": {
+        "category": "GENERAL",
+        "jurisdiction": "international",
+        "authority": "BIRPI / WIPO",
+        "document_type": "Reference",
+    },
+}
+
+SKIP_DIRS = {"sample_docs", ".git", ".venv", "venv", "node_modules", "__pycache__"}
+
+
+def resolve_pdf_metadata(pdf_path: Path, data_dir: Path) -> tuple[dict, str]:
+    """Resolve jurisdiction, category, authority, and document type from path hierarchy."""
+    try:
+        rel = pdf_path.relative_to(data_dir)
+        parts = rel.parts
+    except ValueError:
+        parts = pdf_path.parts
+
+    parts_lower = [p.lower() for p in parts]
+
+    # 1. Determine jurisdiction
+    if "international" in parts_lower:
+        jurisdiction = "international"
+    elif "india" in parts_lower:
+        jurisdiction = "india"
+    else:
+        jurisdiction = "india"
+
+    # 2. Match directory metadata
+    meta = None
+    matched_dir = ""
+    target_dict = INTERNATIONAL_DIR_METADATA if jurisdiction == "international" else INDIA_DIR_METADATA
+
+    for part in parts:
+        for k, v in target_dict.items():
+            if part.lower() == k.lower():
+                meta = dict(v)
+                matched_dir = part
+                break
+        if meta:
+            break
+
+    # Fallback check against other dict
+    if not meta:
+        other_dict = INDIA_DIR_METADATA if jurisdiction == "international" else INTERNATIONAL_DIR_METADATA
+        for part in parts:
+            for k, v in other_dict.items():
+                if part.lower() == k.lower():
+                    meta = dict(v)
+                    matched_dir = part
+                    break
+            if meta:
+                break
+
+    if not meta:
+        meta = {
+            "category": "GENERAL",
+            "jurisdiction": jurisdiction,
+            "authority": "WIPO / International" if jurisdiction == "international" else "Government of India",
+            "document_type": "Document",
+        }
+        matched_dir = parts[0] if parts else ""
+
+    meta["jurisdiction"] = jurisdiction
+
+    # 3. Subdirectory refinements
+    for part in parts:
+        part_l = part.lower()
+        if "single_drugs" in part_l:
+            meta["document_type"] = "Ayurvedic Pharmacopoeia (Single Drugs)"
+            meta["authority"] = "PCIM&H / Ministry of AYUSH, Government of India"
+        elif "formulations" in part_l:
+            meta["document_type"] = "Ayurvedic Pharmacopoeia (Formulations)"
+            meta["authority"] = "PCIM&H / Ministry of AYUSH, Government of India"
+        elif "siddha" in part_l:
+            meta["authority"] = "PCIM&H / Ministry of AYUSH, Government of India"
+            meta["category"] = "REGULATORY"
+            meta["document_type"] = "Siddha Pharmacopoeia Amendment"
+        elif "unani" in part_l:
+            meta["authority"] = "PCIM&H / Ministry of AYUSH, Government of India"
+            meta["category"] = "REGULATORY"
+            meta["document_type"] = "Unani Formulary Amendment"
+        elif "historical" in part_l:
+            meta["document_type"] = "Historical Legal Document"
+        elif "amendments" in part_l:
+            meta["document_type"] = "Regulatory Amendment"
+
+    return meta, matched_dir
 
 
 def check_health():
@@ -114,10 +213,15 @@ def check_health():
         return False
 
 
-def ingest_pdf(pdf_path: Path, meta: dict) -> bool:
+def ingest_pdf(pdf_path: Path, meta: dict, source_label: str) -> bool:
+    stem = pdf_path.stem
+    while stem.lower().endswith(".pdf"):
+        stem = stem[:-4].strip()
+    title = stem.replace("_", " ").replace("-", " — ")
+    title = re.sub(r"\s+", " ", title).strip()
+
     filename = pdf_path.name
-    title = pdf_path.stem.replace("_", " ").replace("-", " ")
-    print(f"  → {filename[:60]}...")
+    print(f"  → [{meta['jurisdiction'].upper()}/{meta['category']}] {filename[:55]}...")
 
     try:
         with open(pdf_path, "rb") as f:
@@ -125,7 +229,7 @@ def ingest_pdf(pdf_path: Path, meta: dict) -> bool:
 
         metadata = {
             "title": title,
-            "source": meta["authority"],
+            "source": source_label,
             "jurisdiction": meta["jurisdiction"],
             "category": meta["category"],
             "authority": meta["authority"],
@@ -139,7 +243,7 @@ def ingest_pdf(pdf_path: Path, meta: dict) -> bool:
             f"{BASE_URL}/api/documents/upload",
             files=files,
             data=data,
-            timeout=120,
+            timeout=180,
         )
 
         if resp.status_code in (200, 201):
@@ -148,13 +252,12 @@ def ingest_pdf(pdf_path: Path, meta: dict) -> bool:
             print(f"     ✓ Ingested: {chunks} chunks")
             return True
         else:
-            # If already exists or another error, skip
             msg = resp.text[:150]
             print(f"     ✗ Failed ({resp.status_code}): {msg}")
             return False
 
     except requests.exceptions.Timeout:
-        print(f"     ✗ Timeout (PDF may be too large)")
+        print(f"     ✗ Timeout (PDF may be too large, consider backend/scripts/ingest_pdfs.py)")
         return False
     except Exception as e:
         print(f"     ✗ Error: {e}")
@@ -163,34 +266,35 @@ def ingest_pdf(pdf_path: Path, meta: dict) -> bool:
 
 def main():
     print("=" * 65)
-    print("  IP-SAKTI Sahayak — Real Data Ingestion")
+    print("  IP-SAKTI Sahayak — Real Data Ingestion (API)")
     print("=" * 65)
+
+    if not DATA_DIR.exists():
+        print(f"\nERROR: Data directory not found: {DATA_DIR}")
+        sys.exit(1)
 
     if not check_health():
         print("\nStart the backend first!")
+        print("Tip: You can also run offline batch ingestion directly:")
+        print("    cd backend && .\\venv\\Scripts\\python.exe scripts\\ingest_pdfs.py")
         sys.exit(1)
+
+    all_pdfs = sorted(DATA_DIR.rglob("*.pdf"))
+    valid_pdfs = [p for p in all_pdfs if not any(skip in p.parts for skip in SKIP_DIRS)]
+
+    print(f"Found {len(valid_pdfs)} PDF documents across all folders.\n")
 
     total_ok = 0
     total_fail = 0
 
-    for folder_name, meta in FOLDER_MAP.items():
-        folder_path = DATA_DIR / folder_name
-        if not folder_path.exists():
-            continue
-
-        # Get all PDFs recursively
-        pdfs = sorted(folder_path.rglob("*.pdf"))
-        if not pdfs:
-            continue
-
-        print(f"\n[{folder_name}] — {meta['category']} ({len(pdfs)} PDFs)")
-
-        for pdf in pdfs:
-            ok = ingest_pdf(pdf, meta)
-            if ok:
-                total_ok += 1
-            else:
-                total_fail += 1
+    for pdf in valid_pdfs:
+        meta, matched_dir = resolve_pdf_metadata(pdf, DATA_DIR)
+        source_label = f"{meta['jurisdiction']}/{matched_dir} / {pdf.name}" if matched_dir else f"{meta['jurisdiction']} / {pdf.name}"
+        ok = ingest_pdf(pdf, meta, source_label)
+        if ok:
+            total_ok += 1
+        else:
+            total_fail += 1
 
     print("\n" + "=" * 65)
     print(f"  Done! {total_ok} ingested, {total_fail} failed/skipped.")

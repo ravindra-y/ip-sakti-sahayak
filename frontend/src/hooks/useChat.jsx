@@ -1,7 +1,9 @@
-import { useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 import { sendChat } from '../services/api';
 
-export const useChat = () => {
+const ChatContext = createContext(null);
+
+export const ChatProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
   const [jurisdiction, setJurisdiction] = useState('india');
   const [isLoading, setIsLoading] = useState(false);
@@ -116,7 +118,7 @@ export const useChat = () => {
     setSelectedSourceIndex(null);
   }, []);
 
-  return {
+  const value = {
     // Chat
     messages,
     jurisdiction,
@@ -137,4 +139,19 @@ export const useChat = () => {
     closeSourceDetail,
     navigateSource,
   };
+
+  return (
+    <ChatContext.Provider value={value}>
+      {children}
+    </ChatContext.Provider>
+  );
 };
+
+export const useChat = () => {
+  const context = useContext(ChatContext);
+  if (!context) {
+    throw new Error('useChat must be used within a ChatProvider');
+  }
+  return context;
+};
+

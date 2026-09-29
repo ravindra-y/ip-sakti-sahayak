@@ -210,10 +210,32 @@ python scripts/seed_sources.py
 
 ### Batch Ingestion (All Categorized PDFs)
 
-To ingest all pre-categorized authoritative documents from the `data/` directory at once, start the backend and run:
+The `data/` directory is organized into separate jurisdiction hierarchies:
+- `data/india/` — 11 domain folders (`01_PATENTS`, `02_PATENT_GUIDELINES`, `03_TRADEMARK`, `04_GI`, `05_DESIGNS`, `06_COPYRIGHT`, `07_BIODIVERSITY_ABS`, `08_AYUSH_REGULATORY`, `09_FSSAI`, `10_PPVR`, `12_SECONDARY_REFERENCE`)
+- `data/international/` — International legal instruments (`01_Global_IP`, `02_PATENTS`, `06_TRADITIONAL_KNOWLEDGE`, `12_SECONDARY_REFERENCE`)
+- `data/sample_docs/` — Fast sample documents for test suites and lightweight prototyping
+
+#### Option A: Direct Batch Ingestion (Fastest, Offline)
+Ingests PDFs directly into ChromaDB and SQLite without needing the web server running:
 
 ```bash
 # Windows
+cd backend
+.\venv\Scripts\python.exe scripts\ingest_pdfs.py
+
+# Filter by jurisdiction (optional):
+.\venv\Scripts\python.exe scripts\ingest_pdfs.py --jurisdiction india
+.\venv\Scripts\python.exe scripts\ingest_pdfs.py --jurisdiction international
+
+# Preview before ingesting:
+.\venv\Scripts\python.exe scripts\ingest_pdfs.py --dry-run
+```
+
+#### Option B: API-Based Ingestion (Via Running Backend)
+Uploads each PDF to the live FastAPI backend endpoint:
+
+```bash
+# Windows (start backend first)
 cd backend
 .\venv\Scripts\python.exe ..\scripts\ingest_all_data.py
 
@@ -317,7 +339,10 @@ ip-sakti-sahayak/
 │   │   └── styles/globals.css   # Design system
 │   ├── package.json
 │   └── vite.config.js
-├── data/                        # Categorized PDF documents for ingestion
+├── data/                        # PDF documents for ingestion
+│   ├── india/                   # India jurisdiction legal corpus (11 categories)
+│   ├── international/           # International instruments (WIPO, Paris, PCT)
+│   └── sample_docs/             # Fast sample documents
 ├── scripts/
 │   ├── ingest_all_data.py       # Batch ingestion script
 │   └── ingest_sample_data.py    # Sample data ingestion script

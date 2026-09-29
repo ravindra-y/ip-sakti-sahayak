@@ -58,7 +58,7 @@ const SourcesPage = () => {
   });
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', animation: 'fadeIn 0.3s ease' }}>
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1.5rem', animation: 'fadeIn 0.3s ease' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{ padding: '0.75rem', backgroundColor: 'var(--color-primary)', borderRadius: 'var(--radius-md)', color: 'white' }}>
@@ -124,10 +124,10 @@ const SourcesPage = () => {
                 </tr>
               ) : (
                 filteredSources.map(source => (
-                  <tr key={source.id}>
+                  <tr key={source.document_id || source.id}>
                     <td>
                       <div style={{ fontWeight: 500, color: 'var(--color-primary)' }}>{source.title}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>{source.chunks} chunks indexed</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '0.25rem' }}>{source.chunk_count ?? source.chunks} chunks indexed</div>
                     </td>
                     <td>
                       <span className={`badge ${source.jurisdiction === 'india' ? 'badge-india' : 'badge-international'}`}>
@@ -137,8 +137,8 @@ const SourcesPage = () => {
                     <td>{source.authority}</td>
                     <td><span className="badge badge-neutral">{source.category}</span></td>
                     <td>
-                      <div>{source.type}</div>
-                      {source.version && <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>v{source.version}</div>}
+                      <div>{source.document_type || source.type}</div>
+                      {source.version && <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>{source.version}</div>}
                     </td>
                   </tr>
                 ))

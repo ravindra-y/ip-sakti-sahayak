@@ -21,6 +21,9 @@ class VectorStoreService:
             return self.international_collection
         return None
 
+    # ChromaDB Rust backend rejects batches larger than this
+    _CHROMA_MAX_BATCH = 5000
+
     def add_document_chunks(
         self,
         jurisdiction: str,
@@ -37,12 +40,17 @@ class VectorStoreService:
             raise ValueError(f"Invalid jurisdiction for add: '{jurisdiction}'. Use 'india' or 'international'.")
 
         ids = [f"{document_id}_{i}" for i in range(len(chunks))]
-        collection.add(
-            ids=ids,
-            embeddings=embeddings,
-            documents=chunks,
-            metadatas=metadata_list,
-        )
+
+        # Split into safe-sized sub-batches to avoid ChromaDB's max batch limit
+        batch_size = self._CHROMA_MAX_BATCH
+        for start in range(0, len(chunks), batch_size):
+            end = start + batch_size
+            collection.add(
+                ids=ids[start:end],
+                embeddings=embeddings[start:end],
+                documents=chunks[start:end],
+                metadatas=metadata_list[start:end],
+            )
 
     def search(
         self,

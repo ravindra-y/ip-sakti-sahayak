@@ -3,18 +3,21 @@ import Layout from './components/Layout/Layout';
 import HomePage from './pages/HomePage';
 import SourcesPage from './pages/SourcesPage';
 import AboutPage from './pages/AboutPage';
+import { ChatProvider } from './hooks/useChat';
 
 function App() {
   return (
-    <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/sources" element={<SourcesPage />} />
-          <Route path="/about" element={<AboutPage />} />
-        </Routes>
-      </Layout>
-    </Router>
+    <ChatProvider>
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/sources" element={<SourcesPage />} />
+            <Route path="/about" element={<AboutPage />} />
+          </Routes>
+        </Layout>
+      </Router>
+    </ChatProvider>
   );
 }
 

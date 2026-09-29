@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { ShieldCheck, MessageSquare, BookOpen, Info, Menu, X, AlertTriangle } from 'lucide-react';
+import { ShieldCheck, MessageSquare, BookOpen, Info, Menu, X } from 'lucide-react';
 
 /**
  * Layout — redesigned header.
  * - Document-authoritative visual language (navy, serif wordmark, no pill nav)
- * - Persistent legal disclaimer bar below the header
  * - Responsive: hamburger on mobile, inline nav on desktop
  */
 const Layout = ({ children }) => {
@@ -93,17 +92,9 @@ const Layout = ({ children }) => {
         </nav>
       )}
 
-      {/* ── Legal Disclaimer Bar ─────────────────────────────────────────── */}
-      <div className="legal-disclaimer-bar" role="note" aria-label="Legal disclaimer">
-        <AlertTriangle size={12} style={{ flexShrink: 0 }} />
-        <span>
-          <strong>Information only — not legal advice.</strong>
-          {' '}For definitive IP or regulatory guidance, consult a qualified attorney or the relevant authority.
-        </span>
-      </div>
 
       {/* ── Page Content ────────────────────────────────────────────────── */}
-      <main style={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <main style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
         {children}
       </main>
 

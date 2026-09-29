@@ -50,6 +50,13 @@ const SourceDetailModal = ({
   const hasPrev = sourceIndex > 0;
   const hasNext = sourceIndex < totalSources - 1;
 
+  // Construct the PDF URL
+  // Assuming the backend is running on localhost:8000 (standard for this setup)
+  // Or we can construct it relative to the API base URL.
+  // Let's use standard relative fetching since vite proxies API requests.
+  const pdfUrl = source.document_id ? `http://localhost:8000/api/documents/file/${source.document_id}${pageNumber ? `#page=${pageNumber}` : ''}` : null;
+  const isSplit = !!pdfUrl;
+
   return (
     <div
       className="source-modal-overlay"
@@ -59,195 +66,237 @@ const SourceDetailModal = ({
       aria-label={`Source detail: ${title}`}
     >
       <div
-        className="source-modal"
+        className={`source-modal ${isSplit ? 'source-modal--split' : ''}`}
         onClick={e => e.stopPropagation()}
       >
-
-        {/* ── Modal Header ──────────────────────────────────────────────── */}
-        <div className="source-modal__header">
-          <div className="source-modal__title-block">
-            <div className="source-modal__label">
-              <FileText size={11} style={{ display: 'inline', marginRight: 4 }} />
-              Referenced Document
+        <div className={isSplit ? 'source-modal__left' : ''} style={isSplit ? { height: '100%' } : {}}>
+          {/* ── Modal Header ──────────────────────────────────────────────── */}
+          <div className="source-modal__header">
+            <div className="source-modal__title-block">
+              <div className="source-modal__label">
+                <FileText size={11} style={{ display: 'inline', marginRight: 4 }} />
+                Referenced Document
+              </div>
+              <div className="source-modal__title">{title}</div>
             </div>
-            <div className="source-modal__title">{title}</div>
+
+            {/* Navigation + close */}
+            <div className="source-modal__nav">
+              {totalSources > 1 && (
+                <>
+                  <button
+                    className="btn-icon"
+                    onClick={() => onNavigate(-1)}
+                    disabled={!hasPrev}
+                    aria-label="Previous source"
+                    title="Previous (←)"
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <span className="source-modal__nav-counter">
+                    {sourceIndex + 1} / {totalSources}
+                  </span>
+                  <button
+                    className="btn-icon"
+                    onClick={() => onNavigate(1)}
+                    disabled={!hasNext}
+                    aria-label="Next source"
+                    title="Next (→)"
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                  <div style={{ width: 1, height: 20, background: 'var(--color-border)', margin: '0 0.25rem' }} />
+                </>
+              )}
+              {!isSplit && (
+                <button
+                  className="btn-icon"
+                  onClick={onClose}
+                  aria-label="Close source detail"
+                  title="Close (Esc)"
+                >
+                  <X size={16} />
+                </button>
+              )}
+            </div>
           </div>
 
-          {/* Navigation + close */}
-          <div className="source-modal__nav">
-            {totalSources > 1 && (
-              <>
-                <button
-                  className="btn-icon"
-                  onClick={() => onNavigate(-1)}
-                  disabled={!hasPrev}
-                  aria-label="Previous source"
-                  title="Previous (←)"
-                >
-                  <ChevronLeft size={16} />
-                </button>
-                <span className="source-modal__nav-counter">
-                  {sourceIndex + 1} / {totalSources}
+          {/* ── Modal Body ───────────────────────────────────────────────── */}
+          <div className="source-modal__body">
+
+            {/* Metadata row */}
+            <div className="source-modal__meta-row">
+
+              {/* Jurisdiction */}
+              {jurisdiction && (
+                <span className={`badge ${jurisdiction === 'india' ? 'badge-india' : 'badge-international'}`}>
+                  {jurisdiction === 'india'
+                    ? <><MapPin size={10} style={{ marginRight: 3 }} />India</>
+                    : <><Globe size={10} style={{ marginRight: 3 }} />International</>
+                  }
                 </span>
-                <button
-                  className="btn-icon"
-                  onClick={() => onNavigate(1)}
-                  disabled={!hasNext}
-                  aria-label="Next source"
-                  title="Next (→)"
+              )}
+
+              {/* Category */}
+              {category && (
+                <span className="badge badge-category">{category}</span>
+              )}
+
+              {/* Doc type */}
+              {docType && (
+                <div className="source-modal__meta-item">
+                  <Bookmark size={12} />
+                  <span>{docType}{version ? ` · ${version}` : ''}</span>
+                </div>
+              )}
+
+              {/* Authority */}
+              {authority && (
+                <div className="source-modal__meta-item">
+                  <Building2 size={12} />
+                  <span>{authority}</span>
+                </div>
+              )}
+
+              {/* Page */}
+              {pageNumber && (
+                <div className="source-modal__meta-item">
+                  <Hash size={12} />
+                  <span>Page {pageNumber}</span>
+                </div>
+              )}
+
+              {/* Relevance */}
+              {relevance !== undefined && (
+                <span
+                  className={`badge ${
+                    relevance >= 0.6
+                      ? 'badge-success'
+                      : relevance >= 0.35
+                      ? 'badge-warning'
+                      : 'badge-error'
+                  }`}
+                  style={{ marginLeft: 'auto' }}
+                  title="Cosine-similarity retrieval score"
                 >
-                  <ChevronRight size={16} />
-                </button>
-                <div style={{ width: 1, height: 20, background: 'var(--color-border)', margin: '0 0.25rem' }} />
-              </>
+                  {Math.round(relevance * 100)}% match
+                </span>
+              )}
+            </div>
+
+            {/* Excerpt / chunk text */}
+            {excerpt ? (
+              <div>
+                <div className="source-modal__excerpt-label">
+                  <Quote size={12} />
+                  Retrieved Excerpt
+                </div>
+                <blockquote className="source-modal__excerpt">{excerpt}</blockquote>
+              </div>
+            ) : (
+              <div style={{
+                padding: 'var(--space-5)',
+                background: 'var(--color-panel)',
+                border: '1px solid var(--color-border)',
+                borderRadius: 'var(--radius-sm)',
+                color: 'var(--color-text-muted)',
+                fontSize: 'var(--text-sm)',
+                textAlign: 'center',
+                marginBottom: 'var(--space-5)',
+              }}>
+                <FileText size={24} style={{ margin: '0 auto 0.5rem', opacity: 0.3 }} />
+                <p style={{ margin: 0 }}>
+                  Full text excerpt is not available for this source.<br />
+                  Use the official document link below.
+                </p>
+              </div>
             )}
-            <button
-              className="btn-icon"
-              onClick={onClose}
-              aria-label="Close source detail"
-              title="Close (Esc)"
-            >
-              <X size={16} />
-            </button>
+
+            {/* Filename */}
+            {filename && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 'var(--space-2)',
+                fontSize: 'var(--text-xs)',
+                color: 'var(--color-text-muted)',
+                padding: 'var(--space-2) var(--space-3)',
+                background: 'var(--color-panel)',
+                borderRadius: 'var(--radius-sm)',
+                border: '1px solid var(--color-divider)',
+              }}>
+                <FileText size={12} style={{ flexShrink: 0 }} />
+                <span style={{ fontFamily: 'Consolas, Monaco, monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {filename}
+                </span>
+                {pubDate && <span style={{ marginLeft: 'auto', flexShrink: 0 }}>{pubDate}</span>}
+              </div>
+            )}
+          </div>
+
+          {/* ── Modal Footer ─────────────────────────────────────────────── */}
+          <div className="source-modal__footer">
+            <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-light)', lineHeight: 1.5 }}>
+              Retrieval confidence scores indicate source relevance, not legal authority.
+            </div>
+            <div style={{ display: 'flex', gap: 'var(--space-2)', flexShrink: 0 }}>
+              {officialUrl && (
+                <a
+                  href={officialUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-accent btn-sm"
+                  style={{ textDecoration: 'none' }}
+                >
+                  <ExternalLink size={13} />
+                  Official Document
+                </a>
+              )}
+              {!isSplit && (
+                <button className="btn btn-secondary btn-sm" onClick={onClose}>
+                  Close
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* ── Modal Body ───────────────────────────────────────────────── */}
-        <div className="source-modal__body">
-
-          {/* Metadata row */}
-          <div className="source-modal__meta-row">
-
-            {/* Jurisdiction */}
-            {jurisdiction && (
-              <span className={`badge ${jurisdiction === 'india' ? 'badge-india' : 'badge-international'}`}>
-                {jurisdiction === 'india'
-                  ? <><MapPin size={10} style={{ marginRight: 3 }} />India</>
-                  : <><Globe size={10} style={{ marginRight: 3 }} />International</>
-                }
-              </span>
-            )}
-
-            {/* Category */}
-            {category && (
-              <span className="badge badge-category">{category}</span>
-            )}
-
-            {/* Doc type */}
-            {docType && (
-              <div className="source-modal__meta-item">
-                <Bookmark size={12} />
-                <span>{docType}{version ? ` · ${version}` : ''}</span>
-              </div>
-            )}
-
-            {/* Authority */}
-            {authority && (
-              <div className="source-modal__meta-item">
-                <Building2 size={12} />
-                <span>{authority}</span>
-              </div>
-            )}
-
-            {/* Page */}
-            {pageNumber && (
-              <div className="source-modal__meta-item">
-                <Hash size={12} />
-                <span>Page {pageNumber}</span>
-              </div>
-            )}
-
-            {/* Relevance */}
-            {relevance !== undefined && (
-              <span
-                className={`badge ${
-                  relevance >= 0.6
-                    ? 'badge-success'
-                    : relevance >= 0.35
-                    ? 'badge-warning'
-                    : 'badge-error'
-                }`}
-                style={{ marginLeft: 'auto' }}
-                title="Cosine-similarity retrieval score"
-              >
-                {Math.round(relevance * 100)}% match
-              </span>
-            )}
-          </div>
-
-          {/* Excerpt / chunk text */}
-          {excerpt ? (
-            <div>
-              <div className="source-modal__excerpt-label">
-                <Quote size={12} />
-                Retrieved Excerpt
-              </div>
-              <blockquote className="source-modal__excerpt">{excerpt}</blockquote>
-            </div>
-          ) : (
-            <div style={{
-              padding: 'var(--space-5)',
-              background: 'var(--color-panel)',
-              border: '1px solid var(--color-border)',
-              borderRadius: 'var(--radius-sm)',
-              color: 'var(--color-text-muted)',
-              fontSize: 'var(--text-sm)',
-              textAlign: 'center',
-              marginBottom: 'var(--space-5)',
-            }}>
-              <FileText size={24} style={{ margin: '0 auto 0.5rem', opacity: 0.3 }} />
-              <p style={{ margin: 0 }}>
-                Full text excerpt is not available for this source.<br />
-                Use the official document link below.
-              </p>
-            </div>
-          )}
-
-          {/* Filename */}
-          {filename && (
+        {/* ── RIGHT: PDF VIEWER (Only if split mode) ──────────────────── */}
+        {isSplit && (
+          <div className="source-modal__right">
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 'var(--space-2)',
-              fontSize: 'var(--text-xs)',
-              color: 'var(--color-text-muted)',
-              padding: 'var(--space-2) var(--space-3)',
-              background: 'var(--color-panel)',
-              borderRadius: 'var(--radius-sm)',
-              border: '1px solid var(--color-divider)',
+              justifyContent: 'space-between',
+              padding: '0.5rem 1rem',
+              background: '#323639',
+              color: '#fff',
+              fontSize: '0.8rem',
+              borderBottom: '1px solid #222',
             }}>
-              <FileText size={12} style={{ flexShrink: 0 }} />
-              <span style={{ fontFamily: 'Consolas, Monaco, monospace', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                {filename}
-              </span>
-              {pubDate && <span style={{ marginLeft: 'auto', flexShrink: 0 }}>{pubDate}</span>}
-            </div>
-          )}
-        </div>
-
-        {/* ── Modal Footer ─────────────────────────────────────────────── */}
-        <div className="source-modal__footer">
-          <div style={{ fontSize: 'var(--text-xs)', color: 'var(--color-text-light)', lineHeight: 1.5 }}>
-            Retrieval confidence scores indicate source relevance, not legal authority.
-          </div>
-          <div style={{ display: 'flex', gap: 'var(--space-2)', flexShrink: 0 }}>
-            {officialUrl && (
-              <a
-                href={officialUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-accent btn-sm"
-                style={{ textDecoration: 'none' }}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <FileText size={14} />
+                <span>Original PDF {pageNumber ? `(Jumped to Page ${pageNumber})` : ''}</span>
+              </div>
+              <button
+                className="btn-icon"
+                onClick={onClose}
+                aria-label="Close"
+                title="Close (Esc)"
+                style={{ color: '#fff' }}
               >
-                <ExternalLink size={13} />
-                Official Document
-              </a>
-            )}
-            <button className="btn btn-secondary btn-sm" onClick={onClose}>
-              Close
-            </button>
+                <X size={16} />
+              </button>
+            </div>
+            <iframe 
+              src={pdfUrl} 
+              width="100%" 
+              height="100%" 
+              style={{ border: 'none', flex: 1 }} 
+              title="PDF Viewer"
+            />
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

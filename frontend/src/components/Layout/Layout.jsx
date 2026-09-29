@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { ShieldCheck, MessageSquare, BookOpen, Info, Menu, X } from 'lucide-react';
+import { ShieldCheck, MessageSquare, BookOpen, Info, Menu, X, Activity } from 'lucide-react';
 
 /**
  * Layout — redesigned header.
@@ -14,6 +14,7 @@ const Layout = ({ children }) => {
     { path: '/',        label: 'Research',      icon: <MessageSquare size={15} /> },
     { path: '/sources', label: 'Knowledge Base', icon: <BookOpen size={15} /> },
     { path: '/about',   label: 'About',         icon: <Info size={15} /> },
+    { path: '/admin',   label: 'Analytics',     icon: <Activity size={15} /> },
   ];
 
   return (

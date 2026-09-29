@@ -5,7 +5,11 @@ import MessageBubble from '../components/Chat/MessageBubble';
 import ChatInput from '../components/Chat/ChatInput';
 import SourcesPanel from '../components/Chat/SourcesPanel';
 import SourceDetailModal from '../components/Chat/SourceDetailModal';
-import { BookMarked, RotateCcw } from 'lucide-react';
+import GraphVisualizer from '../components/Chat/GraphVisualizer';
+import Modal from '../components/common/Modal';
+import ReactMarkdown from 'react-markdown';
+import { BookMarked, RotateCcw, FileText, Download } from 'lucide-react';
+import { draftForm } from '../services/api';
 
 const SUGGESTED_QUESTIONS = {
   india: [
@@ -54,6 +58,13 @@ const HomePage = () => {
 
   // Mobile sources drawer state
   const [isMobileSourcesOpen, setIsMobileSourcesOpen] = useState(false);
+  
+  // Graph state
+  const [activeGraphData, setActiveGraphData] = useState(null);
+
+  // Form Drafting state
+  const [isDrafting, setIsDrafting] = useState(false);
+  const [draftedFormContent, setDraftedFormContent] = useState(null);
 
   // References panel desktop collapse state (persisted in localStorage)
   const [isReferencesPanelCollapsed, setIsReferencesPanelCollapsed] = useState(() => {
@@ -91,6 +102,36 @@ const HomePage = () => {
       setIsMobileSourcesOpen(true);
     }
   }, [activeSources]);
+
+  const handleDraftForm = async (formType) => {
+    if (!conversationId) {
+      alert("No active conversation to draft from.");
+      return;
+    }
+    setIsDrafting(true);
+    try {
+      const res = await draftForm({ conversation_id: conversationId, form_type: formType });
+      setDraftedFormContent(res.data.markdown_content);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to draft form.");
+    } finally {
+      setIsDrafting(false);
+    }
+  };
+
+  const handleDownloadDraft = () => {
+    if (!draftedFormContent) return;
+    const blob = new Blob([draftedFormContent], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Draft_Form_${new Date().getTime()}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const suggestedQuestions = SUGGESTED_QUESTIONS[jurisdiction] || SUGGESTED_QUESTIONS.india;
   const hasMessages        = messages.length > 0;
@@ -236,15 +277,19 @@ const HomePage = () => {
                         ? () => focusMessage(msg)
                         : undefined
                     }
+                    onOpenGraph={(graphData) => setActiveGraphData(graphData)}
+                    onDraftForm={handleDraftForm}
                   />
                 ))}
 
-                {/* Thinking indicator */}
-                {isLoading && (
+                {/* Thinking / Drafting indicator */}
+                {(isLoading || isDrafting) && (
                   <div className="message-entry message-entry--assistant" style={{ opacity: 0.7 }}>
                     <div className="message-meta">
                       <span className="message-meta__role-system">IP-SAKTI Sahayak</span>
-                      <span style={{ color: 'var(--color-text-light)' }}>Searching sources…</span>
+                      <span style={{ color: 'var(--color-text-light)' }}>
+                        {isDrafting ? 'Drafting Form...' : 'Searching sources…'}
+                      </span>
                     </div>
                     <div style={{ display: 'flex', gap: '0.35rem', alignItems: 'center', paddingTop: '0.25rem' }}>
                       {[0, 1, 2].map(i => (
@@ -270,7 +315,7 @@ const HomePage = () => {
           {/* Input area */}
           <ChatInput
             onSend={sendMessage}
-            isLoading={isLoading}
+            isLoading={isLoading || isDrafting}
             jurisdiction={jurisdiction}
             conversationId={conversationId}
           />
@@ -298,6 +343,50 @@ const HomePage = () => {
           onNavigate={navigateSource}
         />
       )}
+
+      {/* ── Graph Visualizer Modal ───────────────────────────────────────── */}
+      {activeGraphData && (
+        <GraphVisualizer 
+          data={activeGraphData} 
+          onClose={() => setActiveGraphData(null)} 
+        />
+      )}
+
+      {/* ── Drafted Form Modal ───────────────────────────────────────── */}
+      <Modal
+        isOpen={!!draftedFormContent}
+        onClose={() => setDraftedFormContent(null)}
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <FileText size={20} color="var(--color-primary)" />
+            <span style={{ color: 'var(--color-primary)', fontSize: '1.1rem', fontWeight: 600 }}>
+              Generated Document Draft
+            </span>
+          </div>
+        }
+      >
+        <div style={{ 
+          maxHeight: '60vh', 
+          overflowY: 'auto', 
+          padding: '1rem', 
+          background: 'var(--color-surface)', 
+          border: '1px solid var(--color-border)',
+          borderRadius: 'var(--radius-sm)',
+          marginBottom: '1rem'
+        }}>
+          <div className="markdown-body">
+            <ReactMarkdown>{draftedFormContent || ""}</ReactMarkdown>
+          </div>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+          <button className="btn btn-ghost" onClick={() => setDraftedFormContent(null)}>
+            Close
+          </button>
+          <button className="btn btn-primary" onClick={handleDownloadDraft} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Download size={16} /> Download Markdown
+          </button>
+        </div>
+      </Modal>
 
       <style>{`
         @keyframes typing-dot {

@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     allowed_origins: str = Field(default="http://localhost:5173,http://localhost:3000")
     debug: bool = Field(default=False)
     hf_token: str = Field(default="")
+    gemini_api_key: str = Field(default="")
 
     @property
     def allowed_origins_list(self) -> list[str]:

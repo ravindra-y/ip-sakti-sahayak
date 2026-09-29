@@ -14,6 +14,7 @@ from .api.sources import router as sources_router
 from .api.conversations import router as conversations_router
 from .api.escalation import router as escalation_router
 from .api.audit import router as audit_router
+from .api.forms import router as forms_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -49,6 +50,7 @@ app.include_router(sources_router, prefix="/api/sources")
 app.include_router(conversations_router, prefix="/api/conversations")
 app.include_router(escalation_router, prefix="/api/escalation")
 app.include_router(audit_router, prefix="/api/audit")
+app.include_router(forms_router, prefix="/api/forms")
 
 @app.get("/")
 async def root():

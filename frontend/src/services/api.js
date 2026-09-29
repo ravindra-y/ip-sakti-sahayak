@@ -30,5 +30,7 @@ export const healthCheck = () => axios.get(BASE_URL + '/health');
 export const createEscalation = (data) => api.post('/escalation/', data);
 export const getEscalations = () => api.get('/escalation/');
 export const getAuditLogs = (params) => api.get('/audit/', { params });
+export const getAuditStats = () => api.get('/audit/stats');
+export const draftForm = (data) => api.post('/forms/draft', data);
 
 export default api;

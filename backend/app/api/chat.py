@@ -17,7 +17,9 @@ def get_rag_pipeline():
     # Important: wait for lifespan to init it properly, but here we can just attach to existing
     vs.initialize()
     oc = OllamaClient(settings.ollama_base_url, settings.ollama_model)
-    return RAGPipeline(vs, oc)
+    from ..services.gemini_client import GeminiClient
+    gc = GeminiClient(api_key=settings.gemini_api_key) if settings.gemini_api_key else None
+    return RAGPipeline(vs, oc, gc)
 
 @router.post("", response_model=ChatResponse)
 async def chat(

@@ -51,3 +51,52 @@ def extract_metadata_from_filename(filename: str) -> dict:
     else:
         meta["document_type"] = "Document"
     return meta
+
+import logging
+from pypdf import PdfReader
+try:
+    from pdf2image import convert_from_path
+    import pytesseract
+    OCR_AVAILABLE = True
+except ImportError:
+    OCR_AVAILABLE = False
+
+logger = logging.getLogger(__name__)
+
+def extract_pdf_with_fallback(file_path: str) -> list[dict]:
+    """
+    Extracts text from a PDF. If the PDF seems to be an image-only scan
+    (very little text extracted), it falls back to OCR if available.
+    Returns a list of dicts: [{"page": 1, "text": "..."}, ...]
+    """
+    page_texts = []
+    try:
+        reader = PdfReader(file_path)
+        total_pages = len(reader.pages)
+        extracted_chars = 0
+        
+        for page_num, page in enumerate(reader.pages, 1):
+            text = page.extract_text()
+            if text and text.strip():
+                page_texts.append({"page": page_num, "text": text})
+                extracted_chars += len(text.strip())
+                
+        # Heuristic: If we extracted less than 50 chars per page on average, it might be scanned.
+        if extracted_chars < (total_pages * 50) and OCR_AVAILABLE:
+            logger.info(f"Low text yield from {file_path}. Attempting OCR fallback...")
+            try:
+                images = convert_from_path(file_path)
+                ocr_texts = []
+                for i, image in enumerate(images, 1):
+                    text = pytesseract.image_to_string(image)
+                    if text and text.strip():
+                        ocr_texts.append({"page": i, "text": text})
+                if ocr_texts:
+                    return ocr_texts
+            except Exception as e:
+                logger.warning(f"OCR fallback failed (is Tesseract/Poppler installed?): {e}")
+                
+    except Exception as e:
+        raise ValueError(f"Failed to read PDF: {str(e)}")
+        
+    return page_texts

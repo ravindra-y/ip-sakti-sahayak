@@ -6,8 +6,10 @@ def calculate_confidence(search_results: List[dict]) -> float:
         
     similarities = []
     for res in search_results:
-        dist = res.get("distance", 1.0)
-        sim = max(0.0, min(1.0, 1.0 - dist))
+        dist = res.get("distance", 2.0)
+        # ChromaDB default metric is L2 Squared. 
+        # For normalized vectors: L2_sq = 2 - 2*cos_sim => cos_sim = 1 - (L2_sq / 2)
+        sim = max(0.0, min(1.0, 1.0 - (dist / 2.0)))
         similarities.append(sim)
         
     if not similarities:

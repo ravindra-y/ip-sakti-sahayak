@@ -10,7 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 load_dotenv()
 
-from app.utils.text_processing import clean_text, chunk_text
+from app.utils.text_processing import clean_text, chunk_text, extract_pdf_with_fallback
 from app.services.embeddings import embedding_service
 from app.services.vector_store import VectorStoreService
 from app.database.connection import SessionLocal, init_db
@@ -47,48 +47,51 @@ def main():
     db = SessionLocal()
     
     try:
-        print(f"Reading {args.file}...")
-        reader = PdfReader(args.file)
-        text = ""
-        for page in reader.pages:
-            text += page.extract_text() + "\n"
-            
-        print("Cleaning and chunking text...")
-        text = clean_text(text)
-        chunks = chunk_text(text)
+        print(f"Reading {args.file} with OCR fallback...")
+        page_texts = extract_pdf_with_fallback(args.file)
         
-        if not chunks:
+        print("Cleaning and chunking text...")
+        all_chunks = []
+        chunk_metadata = []
+        chunk_idx = 0
+        doc_id = str(uuid.uuid4())
+        
+        for page_info in page_texts:
+            cleaned = clean_text(page_info["text"])
+            page_chunks = chunk_text(cleaned)
+            for chunk in page_chunks:
+                all_chunks.append(chunk)
+                chunk_meta = {
+                    "document_id": doc_id,
+                    "title": args.title,
+                    "source": args.source,
+                    "jurisdiction": args.jurisdiction,
+                    "category": args.category,
+                    "authority": args.authority,
+                    "document_type": args.document_type,
+                    "chunk_number": chunk_idx,
+                    "page_number": page_info["page"],
+                    "filename": os.path.basename(args.file)
+                }
+                if args.version:
+                    chunk_meta["version"] = args.version
+                if args.publication_date:
+                    chunk_meta["publication_date"] = args.publication_date
+                if args.official_url:
+                    chunk_meta["official_url"] = args.official_url
+                    
+                chunk_metadata.append(chunk_meta)
+                chunk_idx += 1
+        
+        if not all_chunks:
             print("Error: Could not extract text from document.")
             sys.exit(1)
             
-        print(f"Generated {len(chunks)} chunks. Encoding...")
-        embeddings = embedding_service.encode(chunks)
-        
-        doc_id = str(uuid.uuid4())
+        print(f"Generated {len(all_chunks)} chunks. Encoding...")
+        embeddings = embedding_service.encode(all_chunks)
         
         print("Storing in ChromaDB...")
-        chunk_metadata = []
-        for i in range(len(chunks)):
-            chunk_meta = {
-                "document_id": doc_id,
-                "title": args.title,
-                "source": args.source,
-                "jurisdiction": args.jurisdiction,
-                "category": args.category,
-                "authority": args.authority,
-                "document_type": args.document_type,
-                "chunk_number": i
-            }
-            if args.version:
-                chunk_meta["version"] = args.version
-            if args.publication_date:
-                chunk_meta["publication_date"] = args.publication_date
-            if args.official_url:
-                chunk_meta["official_url"] = args.official_url
-                
-            chunk_metadata.append(chunk_meta)
-            
-        vector_store.add_document_chunks(args.jurisdiction, doc_id, chunks, embeddings, chunk_metadata)
+        vector_store.add_document_chunks(args.jurisdiction, doc_id, all_chunks, embeddings, chunk_metadata)
         
         print("Storing in SQLite...")
         create_document_metadata(
@@ -103,7 +106,7 @@ def main():
             version=args.version,
             publication_date=args.publication_date,
             official_url=args.official_url,
-            chunk_count=len(chunks),
+            chunk_count=len(all_chunks),
             file_path=args.file
         )
         

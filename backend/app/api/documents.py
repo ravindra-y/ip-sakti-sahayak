@@ -12,7 +12,7 @@ from ..models.request_models import DocumentUploadMetadata
 from ..models.response_models import DocumentMetadataResponse
 from ..database.crud import create_document_metadata, list_document_metadata, delete_document_metadata, update_document_chunk_count
 from ..utils.validators import validate_file_type, validate_file_size
-from ..utils.text_processing import clean_text, chunk_text
+from ..utils.text_processing import clean_text, chunk_text, extract_pdf_with_fallback
 from ..services.embeddings import embedding_service
 from ..services.vector_store import VectorStoreService
 from ..config import settings
@@ -62,20 +62,15 @@ async def upload_document(
     with open(file_path, "wb") as f:
         f.write(file.file.read())
 
-    # Extract text per page — preserve page numbers for citation
+    # Extract text per page (with OCR fallback for scanned documents)
     try:
-        reader = PdfReader(file_path)
-        page_texts = []
-        for page_num, page in enumerate(reader.pages, 1):
-            extracted = page.extract_text()
-            if extracted and extracted.strip():
-                page_texts.append({"page": page_num, "text": extracted})
+        page_texts = extract_pdf_with_fallback(file_path)
     except Exception as e:
         try:
             os.remove(file_path)
         except OSError:
             pass
-        raise HTTPException(status_code=422, detail=f"Failed to read PDF: {str(e)}")
+        raise HTTPException(status_code=422, detail=f"Failed to extract text from PDF: {str(e)}")
 
     # Build chunks with page metadata
     all_chunks = []
@@ -204,3 +199,21 @@ def delete_document(
     vector_store.delete_document(jurisdiction, document_id)
     
     return {"deleted": True}
+
+from fastapi.responses import FileResponse
+
+@router.get("/file/{document_id}")
+def get_document_file(document_id: str, db: Session = Depends(get_db)):
+    from ..database.crud import get_document_metadata
+    doc = get_document_metadata(db, document_id)
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+        
+    if not doc.file_path or not os.path.exists(doc.file_path):
+        raise HTTPException(status_code=404, detail="File not found on disk")
+        
+    return FileResponse(
+        doc.file_path, 
+        media_type="application/pdf", 
+        filename=os.path.basename(doc.file_path)
+    )

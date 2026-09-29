@@ -18,9 +18,10 @@ from .ollama_client import OllamaClient, SYSTEM_PROMPT, OllamaUnavailableError
 from ..database.crud import create_message
 
 class RAGPipeline:
-    def __init__(self, vector_store: VectorStoreService, ollama_client: OllamaClient):
+    def __init__(self, vector_store: VectorStoreService, ollama_client: OllamaClient, gemini_client = None):
         self.vector_store = vector_store
         self.ollama_client = ollama_client
+        self.gemini_client = gemini_client
 
     async def process_query(self, chat_request: ChatRequest, db: Session) -> ChatResponse:
         start_time = time.time()
@@ -58,25 +59,46 @@ class RAGPipeline:
         message_id = str(uuid.uuid4())
         conversation_id = chat_request.conversation_id or str(uuid.uuid4())
 
+        context_str = build_context_string(search_results) if search_results else "No context available."
+        user_prompt = f"Question: {chat_request.question}\n\nContext:\n{context_str}"
+        abstain_phrase = "I do not have sufficient authoritative information"
+
         if abstained:
             answer = get_abstention_response()
         else:
             # 7. RAG Generation
-            context_str = build_context_string(search_results)
-            user_prompt = f"Question: {chat_request.question}\n\nContext:\n{context_str}"
-
             try:
                 answer = await self.ollama_client.generate(
                     prompt=user_prompt,
                     system_prompt=SYSTEM_PROMPT,
                 )
             except OllamaUnavailableError:
-                answer = (
-                    get_abstention_response()
-                    + "\n(Note: The AI generation service is currently unavailable.)"
-                )
+                answer = get_abstention_response() + "\n(Note: The AI generation service is currently unavailable.)"
                 abstained = True
                 abstention_reason = "AI service unavailable"
+
+        # Fallback to Gemini if abstained or if ollama returned the abstention phrase
+        if (abstained or abstain_phrase in answer) and self.gemini_client and self.gemini_client.check_availability():
+            try:
+                # Ask Gemini
+                gemini_system_prompt = SYSTEM_PROMPT.replace(
+                    "1. Answer ONLY using the provided context for IP and legal questions.",
+                    "1. Use the provided context if possible, but you may also use your broad knowledge base to answer."
+                ).replace(
+                    "5. If the user asks an IP/legal question and context is insufficient, state: \"I do not have sufficient authoritative information in the retrieved sources to answer this reliably.\"",
+                    "5. Answer the question comprehensively using available knowledge if context is insufficient."
+                )
+                gemini_answer = await self.gemini_client.generate(
+                    prompt=user_prompt,
+                    system_prompt=gemini_system_prompt,
+                )
+                if abstain_phrase not in gemini_answer:
+                    answer = gemini_answer
+                    abstained = False
+                    abstention_reason = None
+            except Exception as e:
+                print(f"Gemini fallback failed: {e}")
+                pass # Keep original answer
 
         # Single log point — always executed exactly once per request
         self._log_message(db, conversation_id, "user", chat_request.question, category)
@@ -100,6 +122,12 @@ class RAGPipeline:
         except Exception:
             pass  # Audit log failure must never break query response
 
+        # Build GraphRAG Visualization Data
+        from .graph_builder import build_knowledge_graph
+        graph_data = None
+        if not abstained and sources:
+            graph_data = build_knowledge_graph(chat_request.question, answer, sources)
+
         return ChatResponse(
             answer=answer,
             jurisdiction=chat_request.jurisdiction.value,
@@ -111,6 +139,7 @@ class RAGPipeline:
             conversation_id=conversation_id,
             message_id=message_id,
             processing_time_ms=(time.time() - start_time) * 1000,
+            graph_data=graph_data
         )
 
     def _log_message(

@@ -817,6 +817,28 @@ p:last-child { margin-bottom: 0; }
   overflow: hidden;
 }
 
+.source-modal--split {
+  max-width: 90vw;
+  height: 90vh;
+  max-height: 90vh;
+  flex-direction: row;
+}
+
+.source-modal__left {
+  flex: 0 0 400px;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.source-modal__right {
+  flex: 1;
+  background: #525659;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
 @keyframes modal-in {
   from { opacity: 0; transform: translateY(16px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }

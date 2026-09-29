@@ -18,6 +18,20 @@ class SourceCitation(BaseModel):
     relevance_score: float
 
 
+class GraphNode(BaseModel):
+    id: str
+    label: str
+    type: str
+
+class GraphEdge(BaseModel):
+    source: str
+    target: str
+    label: str
+
+class GraphData(BaseModel):
+    nodes: List[GraphNode]
+    edges: List[GraphEdge]
+
 class ChatResponse(BaseModel):
     answer: str
     jurisdiction: str
@@ -30,6 +44,7 @@ class ChatResponse(BaseModel):
     conversation_id: str
     message_id: str
     processing_time_ms: float
+    graph_data: Optional[GraphData] = None
 
 class FormulationClassifyResponse(BaseModel):
     preliminary_classification: str

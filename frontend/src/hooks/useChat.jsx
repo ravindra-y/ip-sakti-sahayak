@@ -47,6 +47,7 @@ export const ChatProvider = ({ children }) => {
         query_category: response.data.query_category || null,
         jurisdiction: response.data.jurisdiction || null,
         processing_time_ms: response.data.processing_time_ms || null,
+        graph_data: response.data.graph_data || null,
         timestamp: new Date().toISOString(),
       };
 

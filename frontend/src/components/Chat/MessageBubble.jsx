@@ -9,7 +9,7 @@ import ConfidenceBadge from './ConfidenceBadge';
  * User messages: left-bordered navy block.
  * AI messages: left-bordered saffron block, clickable to focus sources.
  */
-const MessageBubble = ({ message, isActive, onClick }) => {
+const MessageBubble = ({ message, isActive, onClick, onOpenGraph, onDraftForm }) => {
   const isUser      = message.role === 'user';
   const isAssistant = message.role === 'assistant';
 
@@ -104,8 +104,38 @@ const MessageBubble = ({ message, isActive, onClick }) => {
               </span>
             </span>
           )}
+          {message.graph_data && (
+            <button 
+              className="btn btn-outline btn-sm"
+              style={{ marginLeft: 'auto', padding: '0.2rem 0.5rem', fontSize: '0.7rem' }}
+              onClick={(e) => { e.stopPropagation(); if(onOpenGraph) onOpenGraph(message.graph_data); }}
+            >
+              View Knowledge Graph
+            </button>
+          )}
+
+          {/* AGENT ACTIONS */}
+          {message.query_category === 'ABS' && (
+            <button 
+              className="btn btn-outline btn-sm"
+              style={{ padding: '0.2rem 0.5rem', fontSize: '0.7rem', borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}
+              onClick={(e) => { e.stopPropagation(); if(onDraftForm) onDraftForm("NBA_FORM_1"); }}
+            >
+              Draft NBA Form I
+            </button>
+          )}
+          {message.query_category === 'PATENT' && (
+            <button 
+              className="btn btn-outline btn-sm"
+              style={{ padding: '0.2rem 0.5rem', fontSize: '0.7rem', borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}
+              onClick={(e) => { e.stopPropagation(); if(onDraftForm) onDraftForm("PATENT_FORM_1"); }}
+            >
+              Draft Patent Form 1
+            </button>
+          )}
+          
           {message.processing_time_ms && (
-            <span style={{ marginLeft: 'auto', fontSize: 'var(--text-xs)', color: 'var(--color-text-light)' }}>
+            <span style={{ marginLeft: (!message.graph_data && message.query_category !== 'ABS' && message.query_category !== 'PATENT') ? 'auto' : 'var(--space-3)', fontSize: 'var(--text-xs)', color: 'var(--color-text-light)' }}>
               {(message.processing_time_ms / 1000).toFixed(1)}s
             </span>
           )}

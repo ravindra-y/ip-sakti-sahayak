@@ -55,7 +55,10 @@ class RAGPipeline:
             abstained = False
             abstention_reason = None
 
-        sources = extract_citations(search_results) if category != "GENERAL" else []
+        sources = extract_citations(search_results)
+        if category == "GENERAL" and confidence < settings.confidence_threshold:
+            sources = []
+        
         message_id = str(uuid.uuid4())
         conversation_id = chat_request.conversation_id or str(uuid.uuid4())
 

@@ -48,7 +48,7 @@ const AdminDashboard = () => {
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', borderBottom: '1px solid var(--color-border)', paddingBottom: '1rem' }}>
         <Activity size={28} color="var(--color-primary)" />
-        <h1 style={{ margin: 0, color: 'var(--color-primary)', fontSize: '1.75rem' }}>IP-SAKTI Admin Analytics</h1>
+        <h1 style={{ margin: 0, color: 'var(--color-primary)', fontSize: '1.75rem' }}>IP-VEDA Admin Analytics</h1>
       </div>
 
       {/* Top Metrics Cards */}

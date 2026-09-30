@@ -1,1 +1,1 @@
-# IP-SAKTI Sahayak Backend Application Package
+# IP-VEDA Backend Application Package

@@ -6,7 +6,7 @@ KEYWORDS = {
     "GEOGRAPHICAL_INDICATION": ["geographical indication", "gi tag", "gi registration", "place of origin", "regional product"],
     "DESIGN": ["industrial design", "design registration", "ornamental", "aesthetic"],
     "COPYRIGHT": ["copyright", "author", "literary work", "artistic work", "moral rights", "neighbouring rights", "royalty"],
-    "TRADITIONAL_KNOWLEDGE": ["traditional knowledge", "tkdl", "folk medicine", "indigenous knowledge", "hereditary", "vaidya", "prior art", "tk database"],
+    "TRADITIONAL_KNOWLEDGE": ["traditional knowledge", "tkdl", "folk medicine", "indigenous knowledge", "hereditary", "vaidya", "prior art", "tk database", "ayurveda", "ayurvedic", "intellectual property", "ip options"],
     "ABS": ["access and benefit sharing", "nagoya", "biodiversity", "biological resource", "bioprospecting", "benefit sharing", "prior informed consent", "pic"],
     "REGULATORY": ["regulatory", "ayush", "schedule", "drug", "licence", "license", "manufacturing", "gmp", "registration", "approval", "cdsco", "drugs and cosmetics"],
     "FORMULATION": ["formulation", "classical", "proprietary", "phytopharmaceutical", "nutraceutical", "classical ayurvedic", "patent proprietary", "preparation", "ingredients", "recipe"]

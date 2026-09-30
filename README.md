@@ -1,10 +1,10 @@
-# IP-SAKTI Sahayak
+# IP-VEDA
 
 **Multilingual RAG AI Assistant for Ayurveda Intellectual Property & Regulatory Guidance**
 
 > **Information only — not legal advice.**
 
-IP-SAKTI Sahayak is an open-source Retrieval-Augmented Generation (RAG) system providing guidance on Intellectual Property and regulatory matters related to Ayurveda. It retrieves information from authoritative indexed sources and generates plain-language explanations with mandatory source citations.
+IP-VEDA is an open-source Retrieval-Augmented Generation (RAG) system providing guidance on Intellectual Property and regulatory matters related to Ayurveda. It retrieves information from authoritative indexed sources and generates plain-language explanations with mandatory source citations.
 
 ---
 
@@ -56,7 +56,7 @@ ChromaDB    Ollama (qwen3:1.7b)
 
 ```bash
 git clone <repo-url>
-cd ip-sakti-sahayak
+cd ip-veda
 
 # Install root dependencies (concurrently runner)
 npm install
@@ -310,7 +310,7 @@ POST /api/chat
 ## Project Structure
 
 ```
-ip-sakti-sahayak/
+ip-veda/
 ├── backend/
 │   ├── app/
 │   │   ├── main.py              # FastAPI entry point
@@ -419,4 +419,4 @@ This project is for informational and research purposes. See LICENSE file.
 
 ---
 
-*IP-SAKTI Sahayak — Information only, not legal advice.*
+*IP-VEDA — Information only, not legal advice.*

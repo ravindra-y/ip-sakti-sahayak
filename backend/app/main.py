@@ -28,7 +28,7 @@ async def lifespan(app: FastAPI):
     yield
 
 app = FastAPI(
-    title="IP-SAKTI Sahayak API",
+    title="IP-VEDA API",
     description="Multilingual RAG assistant for Ayurveda IP and regulatory guidance",
     version="1.0.0",
     lifespan=lifespan
@@ -54,7 +54,7 @@ app.include_router(forms_router, prefix="/api/forms")
 
 @app.get("/")
 async def root():
-    return {"name": "IP-SAKTI Sahayak", "version": "1.0.0", "status": "running"}
+    return {"name": "IP-VEDA", "version": "1.0.0", "status": "running"}
 
 @app.get("/health")
 async def health():

@@ -31,6 +31,7 @@ def extract_citations(search_results: List[dict]) -> list:
             page_number=page_number,
             filename=meta.get("filename"),
             relevance_score=relevance,
+            text=result.get("document", ""),
         ))
     return citations
 

@@ -200,8 +200,8 @@ const HomePage = () => {
                 flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                padding: '3rem 2rem',
-                gap: '2rem',
+                padding: '1rem 2rem',
+                gap: '1rem',
               }}>
                 {/* Wordmark */}
                 <div style={{ textAlign: 'center' }}>
@@ -209,9 +209,9 @@ const HomePage = () => {
                     fontFamily: 'var(--font-serif)',
                     fontSize: 'var(--text-2xl)',
                     color: 'var(--color-primary)',
-                    marginBottom: '0.5rem',
+                    marginBottom: '0.25rem',
                   }}>
-                    IP-SAKTI Sahayak
+                    IP-VEDA
                   </h2>
                   <p style={{ color: 'var(--color-text-muted)', fontSize: 'var(--text-sm)', margin: 0 }}>
                     Ayurveda Intellectual Property &amp; Regulatory Research Assistant
@@ -286,7 +286,7 @@ const HomePage = () => {
                 {(isLoading || isDrafting) && (
                   <div className="message-entry message-entry--assistant" style={{ opacity: 0.7 }}>
                     <div className="message-meta">
-                      <span className="message-meta__role-system">IP-SAKTI Sahayak</span>
+                      <span className="message-meta__role-system">IP-VEDA</span>
                       <span style={{ color: 'var(--color-text-light)' }}>
                         {isDrafting ? 'Drafting Form...' : 'Searching sources…'}
                       </span>

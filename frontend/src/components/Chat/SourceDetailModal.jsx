@@ -55,7 +55,7 @@ const SourceDetailModal = ({
   // Or we can construct it relative to the API base URL.
   // Let's use standard relative fetching since vite proxies API requests.
   const pdfUrl = source.document_id ? `http://localhost:8000/api/documents/file/${source.document_id}${pageNumber ? `#page=${pageNumber}` : ''}` : null;
-  const isSplit = !!pdfUrl;
+  const isSplit = false;
 
   return (
     <div
@@ -66,10 +66,9 @@ const SourceDetailModal = ({
       aria-label={`Source detail: ${title}`}
     >
       <div
-        className={`source-modal ${isSplit ? 'source-modal--split' : ''}`}
+        className="source-modal"
         onClick={e => e.stopPropagation()}
       >
-        <div className={isSplit ? 'source-modal__left' : ''} style={isSplit ? { height: '100%' } : {}}>
           {/* ── Modal Header ──────────────────────────────────────────────── */}
           <div className="source-modal__header">
             <div className="source-modal__title-block">
@@ -240,6 +239,19 @@ const SourceDetailModal = ({
               Retrieval confidence scores indicate source relevance, not legal authority.
             </div>
             <div style={{ display: 'flex', gap: 'var(--space-2)', flexShrink: 0 }}>
+              {pdfUrl && (
+                <a
+                  href={pdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-outline btn-sm"
+                  style={{ textDecoration: 'none' }}
+                  download
+                >
+                  <FileText size={13} />
+                  Download PDF
+                </a>
+              )}
               {officialUrl && (
                 <a
                   href={officialUrl}
@@ -249,54 +261,14 @@ const SourceDetailModal = ({
                   style={{ textDecoration: 'none' }}
                 >
                   <ExternalLink size={13} />
-                  Official Document
+                  Source Website
                 </a>
               )}
-              {!isSplit && (
-                <button className="btn btn-secondary btn-sm" onClick={onClose}>
-                  Close
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* ── RIGHT: PDF VIEWER (Only if split mode) ──────────────────── */}
-        {isSplit && (
-          <div className="source-modal__right">
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '0.5rem 1rem',
-              background: '#323639',
-              color: '#fff',
-              fontSize: '0.8rem',
-              borderBottom: '1px solid #222',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <FileText size={14} />
-                <span>Original PDF {pageNumber ? `(Jumped to Page ${pageNumber})` : ''}</span>
-              </div>
-              <button
-                className="btn-icon"
-                onClick={onClose}
-                aria-label="Close"
-                title="Close (Esc)"
-                style={{ color: '#fff' }}
-              >
-                <X size={16} />
+              <button className="btn btn-secondary btn-sm" onClick={onClose}>
+                Close
               </button>
             </div>
-            <iframe 
-              src={pdfUrl} 
-              width="100%" 
-              height="100%" 
-              style={{ border: 'none', flex: 1 }} 
-              title="PDF Viewer"
-            />
           </div>
-        )}
       </div>
     </div>
   );

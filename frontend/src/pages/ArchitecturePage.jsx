@@ -113,7 +113,7 @@ const ArchitecturePage = () => {
           System Architecture
         </h2>
         <p style={{ color: 'var(--color-text-muted)', maxWidth: '600px', margin: '0 auto', fontSize: '0.95rem' }}>
-          IP-SAKTI Sahayak uses a deterministic, auditable Retrieval-Augmented Generation (RAG) pipeline.
+          IP-VEDA uses a deterministic, auditable Retrieval-Augmented Generation (RAG) pipeline.
           Click any step to see its design rationale and technology stack.
         </p>
       </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { ShieldCheck, MessageSquare, BookOpen, Info, Menu, X, Activity } from 'lucide-react';
+import { ShieldCheck, MessageSquare, BookOpen, Menu, X, Activity, ClipboardCheck, Globe2 } from 'lucide-react';
 
 /**
  * Layout — redesigned header.
@@ -11,14 +11,15 @@ const Layout = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navItems = [
-    { path: '/',        label: 'Research',      icon: <MessageSquare size={15} /> },
+    { path: '/',        label: 'Home',      icon: <ShieldCheck size={15} /> },
+    { path: '/assess', label: 'Assess Product', icon: <ClipboardCheck size={15} /> },
+    { path: '/assistant', label: 'AI Assistant', icon: <MessageSquare size={15} /> },
     { path: '/sources', label: 'Knowledge Base', icon: <BookOpen size={15} /> },
-    { path: '/about',   label: 'About',         icon: <Info size={15} /> },
     { path: '/admin',   label: 'Analytics',     icon: <Activity size={15} /> },
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: 'var(--color-bg)', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--color-bg)' }}>
 
       {/* ── Application Header ──────────────────────────────────────────── */}
       <header className="app-header">
@@ -26,11 +27,11 @@ const Layout = ({ children }) => {
         {/* Logo / Wordmark */}
         <div className="app-header__logo">
           <div className="app-header__logo-icon">
-            <ShieldCheck size={20} />
+            <img src="/logo.png" alt="Logo" style={{ height: '32px' }} />
           </div>
           <div className="app-header__wordmark">
-            <span className="app-header__name">IP-SAKTI Sahayak</span>
-            <span className="app-header__sub">Ayurveda Regulatory AI</span>
+            <span className="app-header__name">IP-VEDA</span>
+            <span className="app-header__sub">Ayurveda IP &amp; Regulatory Navigator</span>
           </div>
         </div>
 
@@ -55,7 +56,6 @@ const Layout = ({ children }) => {
           onClick={() => setIsMobileMenuOpen(open => !open)}
           aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
           aria-expanded={isMobileMenuOpen}
-          style={{ color: 'white' }}
         >
           {isMobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
@@ -95,9 +95,10 @@ const Layout = ({ children }) => {
 
 
       {/* ── Page Content ────────────────────────────────────────────────── */}
-      <main style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         {children}
       </main>
+
 
       <style>{`
         @media (min-width: 769px) {

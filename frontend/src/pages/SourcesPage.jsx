@@ -66,7 +66,7 @@ const SourcesPage = () => {
           </div>
           <div>
             <h2 style={{ color: 'var(--color-primary)', margin: 0 }}>Knowledge Base</h2>
-            <p style={{ color: 'var(--color-text-muted)', margin: 0, fontSize: '0.95rem' }}>Authoritative sources indexed in the IP-SAKTI Sahayak RAG system.</p>
+            <p style={{ color: 'var(--color-text-muted)', margin: 0, fontSize: '0.95rem' }}>Authoritative sources indexed in the IP-VEDA RAG system.</p>
           </div>
         </div>
         <button className="btn btn-primary" onClick={() => setIsUploadModalOpen(true)}>

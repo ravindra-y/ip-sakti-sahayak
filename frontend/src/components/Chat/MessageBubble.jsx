@@ -35,7 +35,7 @@ const MessageBubble = ({ message, isActive, onClick, onOpenGraph, onDraftForm })
       {/* Role label */}
       <div className="message-meta">
         <span className={isUser ? 'message-meta__role-user' : 'message-meta__role-system'}>
-          {isUser ? 'You' : 'IP-SAKTI Sahayak'}
+          {isUser ? 'You' : 'IP-VEDA'}
         </span>
         {message.timestamp && (
           <span style={{ color: 'var(--color-text-light)', fontWeight: 400 }}>

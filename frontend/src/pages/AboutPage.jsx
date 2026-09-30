@@ -18,7 +18,7 @@ const AboutPage = () => {
   return (
     <div className="card" style={{ maxWidth: '800px', margin: '2rem auto', padding: '2rem' }}>
       <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-        <h2 style={{ color: 'var(--color-primary)', margin: '0 0 0.5rem 0' }}>IP-SAKTI Sahayak</h2>
+        <h2 style={{ color: 'var(--color-primary)', margin: '0 0 0.5rem 0' }}>IP-VEDA</h2>
         <span className="badge" style={{ backgroundColor: 'var(--color-border)' }}>Version 1.0.0</span>
       </div>
 

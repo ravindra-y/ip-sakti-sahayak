@@ -16,6 +16,7 @@ class SourceCitation(BaseModel):
     page_number: Optional[int] = None      # page from which the chunk was extracted
     filename: Optional[str] = None         # original filename
     relevance_score: float
+    text: Optional[str] = None
 
 
 class GraphNode(BaseModel):
